@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\PictureBooking\table.jpg" />
+    <Content Remove="wwwroot\PictureBooking\vipRoom.jpg" />
+    <Content Remove="wwwroot\Picture\instagram-logo-36.png" />
+    <Content Remove="wwwroot\Picture\telegram-logo-36.png" />
+    <Content Remove="wwwroot\Picture\vk-logo-36.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\PictureBooking\table.jpg" />
+    <None Include="wwwroot\PictureBooking\vipRoom.jpg" />
+    <None Include="wwwroot\Picture\instagram-logo-36.png" />
+    <None Include="wwwroot\Picture\telegram-logo-36.png" />
+    <None Include="wwwroot\Picture\vk-logo-36.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,45 @@
+using Microsoft.EntityFrameworkCore;
+using SystemBroni.Models;
+using SystemBroni.Service;
+
+namespace SystemBroni
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Подключаем контекст БД
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ITableService, TableService>();
+            builder.Services.AddScoped<IVipRoomService, VipRoomService>();
+
+
+            var app = builder.Build();
+
+            // Настраиваем приложение
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.Run();
+        }
+    }
+}

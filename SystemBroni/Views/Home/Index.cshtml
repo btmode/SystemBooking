@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+
+    <header class="header text-dark py-3 d-flex justify-content-between align-items-center">
+        <div class="claude-monet ml-3">
+            <h1 class="fw-bold">Claude Monet</h1>
+        </div>
+        <div class="social-icons ml-3">
+            <a href="https://t.me/btmode" class="social-link">
+                <img src="~/Picture/telegram-logo-36.png" alt="Telegram" class="mx-2">
+            </a>
+            <a href="https://www.instagram.com/cristiano/" class="social-link">
+                <img src="~/Picture/instagram-logo-36.png" alt="Instagram" class="mx-2">
+            </a>
+            <a href="https://vk.com/burgerking" class="social-link">
+                <img src="~/Picture/vk-logo-36.png" alt="VK" class="mx-2">
+            </a>
+            
+        </div>
+    </header>
+
+    <header class="header-welcome bg-dark text-white justify-content-between text-center py-5 align-items-center">
+        <h1 class="display-4">Добро пожаловать в систему бронирования</h1>
+        <p class="lead">Забронируйте столик или VIP-комнату в нашем ресторане</p>
+        <a href="#booking" class="btn btn-primary btn-lg">Забронировать</a>
+    </header>
+
+    <section id="booking" class="py-5">
+        <div class="container text-center">
+            <h2 class="mb-4">Выберите тип бронирования</h2><hr class="hr-thick" />
+            <header class="header-booking bg-dark text-dark py-3 d-flex justify-content-between align-items-center">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-lg">
+                            <img src="~/PictureBooking/table.jpg" class="img-fluid" alt="Столик">
+                            <div class="card-body">
+                                <h3 class="card-title">Столик</h3>
+                                <p class="card-text">Зарезервируйте удобный столик в общем зале</p>
+                                <a class="btn btn-success">Забронировать</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-lg">
+                            <img src="~/PictureBooking/vipRoom.jpg" class="img-fluid" alt="VIP-комната">
+                            <div class="card-body">
+                                <h3 class="card-title">VIP-комната</h3>
+                                <p class="card-text">Забронируйте приватную VIP-комнату</p>
+                                <a class="btn btn-success">Забронировать</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </div>
+    </section>
+
+    <footer class="footer text-center text-white py-3 mt-4">
+        <p>© 2024 Claude Monet | Все права защищены</p><br>
+    </footer>
+</div>
