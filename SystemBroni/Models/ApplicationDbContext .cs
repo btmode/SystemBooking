@@ -31,14 +31,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<TableBooking>()
             .HasOne(b => b.User)
             .WithMany()
-            .HasForeignKey(b => b.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Один столик может быть забронирован только один раз
         modelBuilder.Entity<TableBooking>()
             .HasOne(b => b.Table)
             .WithMany()
-            .HasForeignKey(b => b.TableId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // Один пользователь может иметь много бронирований VIP-комнат
@@ -54,14 +52,5 @@ public class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(b => b.VipRoomId)
             .OnDelete(DeleteBehavior.SetNull);
-
-        // Добавляем конфигурацию для enum (чтобы хранились в виде строк)
-        modelBuilder.Entity<Table>()
-            .Property(t => t.Status)
-            .HasConversion<string>();
-
-        modelBuilder.Entity<VipRoom>()
-            .Property(v => v.Status)
-            .HasConversion<string>();
     }
 }
