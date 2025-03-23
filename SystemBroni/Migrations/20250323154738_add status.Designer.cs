@@ -12,8 +12,8 @@ using SystemBroni.Models;
 namespace SystemBroni.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250323141705_DbV2")]
-    partial class DbV2
+    [Migration("20250323154738_add status")]
+    partial class addstatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
