@@ -7,16 +7,15 @@ namespace SystemBroni.Service
     {
         public VipRoom CreateVipRoom(VipRoom VipRoom);
         public IEnumerable<VipRoom> GetVipRooms();
-        public VipRoom GetVipRoomById(int id);
-        public bool UpdateVipRoom(int id, VipRoom updateVipRoom);
-        public bool DeleteVipRoomById(int id);
+        public VipRoom GetVipRoomById(Guid id);
+        public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom);
+        public bool DeleteVipRoomById(Guid id);
     }
 
     
     public class VipRoomService : IVipRoomService
     {
         private readonly ApplicationDbContext _context;
-        private readonly List<int> _deletedIds = []; // храним удаленные ID tables
 
         public VipRoomService(ApplicationDbContext context)
         {
@@ -40,13 +39,13 @@ namespace SystemBroni.Service
         }
 
         // Получить VipRoom по ID
-        public VipRoom GetVipRoomById(int id)
+        public VipRoom GetVipRoomById(Guid id)
         {
             return _context.VipRooms.Find(id);
         }
 
         // Обновить данные VipRoom
-        public bool UpdateVipRoom(int id, VipRoom updateVipRoom)
+        public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom)
         {
             var vipRoom = _context.VipRooms.Find(id);
 
@@ -62,7 +61,7 @@ namespace SystemBroni.Service
         }
 
         // Удалить VipRoom по ID
-        public bool DeleteVipRoomById(int id)
+        public bool DeleteVipRoomById(Guid id)
         {
             var vipRoom = _context.VipRooms.Find(id);
 
@@ -73,9 +72,6 @@ namespace SystemBroni.Service
             _context.VipRooms.Remove(vipRoom);
 
             _context.SaveChanges(); 
-
-            _deletedIds.Add(id);
-
             return true;
         }
     }

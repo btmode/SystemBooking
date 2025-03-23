@@ -24,11 +24,9 @@ namespace SystemBroni.Migrations
 
             modelBuilder.Entity("SystemBroni.Models.Table", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
@@ -46,23 +44,21 @@ namespace SystemBroni.Migrations
 
             modelBuilder.Entity("SystemBroni.Models.TableBooking", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("BookingTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("TableId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("TableId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -77,11 +73,9 @@ namespace SystemBroni.Migrations
 
             modelBuilder.Entity("SystemBroni.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -106,11 +100,9 @@ namespace SystemBroni.Migrations
 
             modelBuilder.Entity("SystemBroni.Models.VipRoom", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
@@ -129,23 +121,21 @@ namespace SystemBroni.Migrations
 
             modelBuilder.Entity("SystemBroni.Models.VipRoomBooking", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("BookingTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("VipRoomId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("VipRoomId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 

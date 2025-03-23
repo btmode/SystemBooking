@@ -35,8 +35,8 @@ namespace SystemBroni.Controllers
         }
 
         // Получить стол по ID
-        [HttpGet("get/{id:int}")]
-        public ActionResult<Table> GetTable(int id)
+        [HttpGet("get/{id:Guid}")]
+        public ActionResult<Table> GetTable(Guid id)
         {
             var table = _TableService.GetTableById(id);
             if (table == null)
@@ -49,8 +49,8 @@ namespace SystemBroni.Controllers
 
 
         // Обновить данные стола по ID
-        [HttpPut("update/{id:int}")]
-        public IActionResult UpdateTables(int id, [FromBody] Table updatedTable)
+        [HttpPut("update/{id:Guid}")]
+        public IActionResult UpdateTables(Guid id, Table updatedTable)
         {
             bool updated = _TableService.UpdateTable(id, updatedTable);
             if (!updated)
@@ -62,8 +62,8 @@ namespace SystemBroni.Controllers
         }
 
         // Удалить пользователя по ID
-        [HttpDelete("delete/{id:int}")]
-        public IActionResult DeleteUser(int id)
+        [HttpDelete("delete/{id:Guid}")]
+        public IActionResult DeleteUser(Guid id)
         {
             bool deleted = _TableService.DeleteTableById(id);
             if (!deleted)

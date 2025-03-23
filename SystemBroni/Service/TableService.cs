@@ -8,20 +8,19 @@ namespace SystemBroni.Service
     {
         public Table CreateTable(Table table);
         public IEnumerable<Table> GetTables();
-        public Table GetTableById(int id);
-        public bool UpdateTable(int id, Table updateTable);
-        public bool DeleteTableById(int id);
+        public Table GetTableById(Guid id);
+        public bool UpdateTable(Guid id, Table updateTable);
+        public bool DeleteTableById(Guid id);
     }
-  
+
     public class TableService : ITableService
     {
         private readonly ApplicationDbContext _context;
-        private readonly List<int> _deletedIds = []; // храним удаленные ID tables
 
         public TableService(ApplicationDbContext context)
         {
             _context = context;
-        }        
+        }
 
         // создать новый стол
         public Table CreateTable(Table table)
@@ -38,12 +37,12 @@ namespace SystemBroni.Service
             return _context.Tables.OrderBy(u => u.Id).ToList();
         }
 
-        public Table GetTableById(int id)
+        public Table GetTableById(Guid id)
         {
             return _context.Tables.Find(id);
         }
 
-        public bool UpdateTable(int id, Table updateTable)
+        public bool UpdateTable(Guid id, Table updateTable)
         {
             var table = _context.Tables.Find(id);
 
@@ -58,20 +57,17 @@ namespace SystemBroni.Service
             return true;
         }
 
-        public bool DeleteTableById(int id)
+        public bool DeleteTableById(Guid id)
         {
-            var table = _context.Tables.Find(id);            
+            var table = _context.Tables.Find(id);
 
-            if(table == null)
+            if (table == null)
             {
                 return false;
             }
             _context.Tables.Remove(table);
 
             _context.SaveChanges();
-
-            _deletedIds.Add(id);
-
             return true;
         }
     }

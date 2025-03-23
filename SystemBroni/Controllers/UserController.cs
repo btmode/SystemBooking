@@ -37,8 +37,8 @@ namespace SystemBroni.Controllers
         }
 
         // Получить пользователя по ID
-        [HttpGet("get/{id:int}")]
-        public ActionResult<User> GetUser(int id)
+        [HttpGet("get/{id:Guid}")]
+        public ActionResult<User> GetUser(Guid id)
         {
             var user = _userService.GetUserById(id);
             if (user == null)
@@ -48,8 +48,8 @@ namespace SystemBroni.Controllers
         
 
         // Обновить данные пользователя
-        [HttpPut("update/{id:int}")]
-        public IActionResult UpdateUser(int id, User updatedUser)
+        [HttpPut("update/{id:Guid}")]
+        public IActionResult UpdateUser(Guid id, User updatedUser)
         {
             bool updated = _userService.UpdateUser(id, updatedUser);
             if (!updated)
@@ -58,8 +58,8 @@ namespace SystemBroni.Controllers
         }
 
         // Удалить пользователя по ID
-        [HttpDelete("delete/{id:int}")]
-        public IActionResult DeleteUser(int id)
+        [HttpDelete("delete/{id:Guid}")]
+        public IActionResult DeleteUser(Guid id)
         {
             bool deleted = _userService.DeleteUserById(id);
             if (!deleted)

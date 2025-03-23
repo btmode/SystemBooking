@@ -8,16 +8,15 @@ namespace SystemBroni.Service
     {
         public User CreateUser(User user);
         public IEnumerable<User> GetUsers();
-        public User GetUserById(int id);
-        public bool UpdateUser(int id, User user);
-        public bool DeleteUserById(int id);
+        public User GetUserById(Guid id);
+        public bool UpdateUser(Guid id, User user);
+        public bool DeleteUserById(Guid id);
 
     }
 
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
-        private readonly List<int> _deletedIds = []; // храним удаленные ID tables
 
         public UserService(ApplicationDbContext context)
         {
@@ -40,13 +39,13 @@ namespace SystemBroni.Service
         }
 
         // получаем юзера по id 
-        public User GetUserById(int id)
+        public User GetUserById(Guid id)
         {
             return _context.Users.Find(id);
         }
 
         // обновляем юзера по id и меняем его данные
-        public bool UpdateUser(int id, User updatedUser)
+        public bool UpdateUser(Guid id, User updatedUser)
         {
             var user = _context.Users.Find(id);
             if (user == null)
@@ -61,7 +60,7 @@ namespace SystemBroni.Service
         }
 
         // удаляем юзера по id 
-        public bool DeleteUserById(int id)
+        public bool DeleteUserById(Guid id)
         {
             var user = _context.Users.Find(id);
 
@@ -71,8 +70,6 @@ namespace SystemBroni.Service
             _context.Users.Remove(user);
 
             _context.SaveChanges();
-
-            _deletedIds.Add(id);
 
             return true;
         }

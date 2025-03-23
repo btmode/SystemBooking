@@ -21,36 +21,9 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new UserConfiguration());
-
-        // Уникальность Email
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-
-        // Один пользователь может иметь много бронирований столиков
-        modelBuilder.Entity<TableBooking>()
-            .HasOne(b => b.User)
-            .WithMany()
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Один столик может быть забронирован только один раз
-        modelBuilder.Entity<TableBooking>()
-            .HasOne(b => b.Table)
-            .WithMany()
-            .OnDelete(DeleteBehavior.SetNull);
-
-        // Один пользователь может иметь много бронирований VIP-комнат
-        modelBuilder.Entity<VipRoomBooking>()
-            .HasOne(b => b.User)
-            .WithMany()
-            .HasForeignKey(b => b.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Одна VIP-комната может быть забронирована только один раз
-        modelBuilder.Entity<VipRoomBooking>()
-            .HasOne(b => b.VipRoom)
-            .WithMany()
-            .HasForeignKey(b => b.VipRoomId)
-            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.ApplyConfiguration(new TableConfiguration()); // Добавляем
+        modelBuilder.ApplyConfiguration(new VipRoomConfiguration()); // Добавляем
+        modelBuilder.ApplyConfiguration(new TableBookingConfiguration());
+        modelBuilder.ApplyConfiguration(new VipRoomBookingConfiguration()); // Добавляем
     }
 }

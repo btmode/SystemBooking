@@ -17,7 +17,7 @@ namespace SystemBroni.Controllers
 
         // Создать новую VIP-комнату
         [HttpPost("create")]
-        public ActionResult<VipRoom> CreateNewVipRoom([FromBody] VipRoom vipRoom)
+        public ActionResult<VipRoom> CreateNewVipRoom(VipRoom vipRoom)
         {
             if (vipRoom == null)
                 return BadRequest("Переданы некорректные данные");
@@ -34,8 +34,8 @@ namespace SystemBroni.Controllers
         }
 
         // Получить VIP-комнату по ID
-        [HttpGet("get/{id:int}")]
-        public ActionResult<VipRoom> GetVipRoom(int id)
+        [HttpGet("get/{id:Guid}")]
+        public ActionResult<VipRoom> GetVipRoom(Guid id)
         {
             var vipRoom = _vipRoomService.GetVipRoomById(id);
             if (vipRoom == null)
@@ -47,8 +47,8 @@ namespace SystemBroni.Controllers
         }
 
         // Обновить данные VIP-комнаты по ID
-        [HttpPut("update/{id:int}")]
-        public IActionResult UpdateVipRoom(int id, [FromBody] VipRoom updatedVipRoom)
+        [HttpPut("update/{id:Guid}")]
+        public IActionResult UpdateVipRoom(Guid id, VipRoom updatedVipRoom)
         {
             bool updated = _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
             if (!updated)
@@ -60,8 +60,8 @@ namespace SystemBroni.Controllers
         }
 
         // Удалить VIP-комнату по ID
-        [HttpDelete("delete/{id:int}")]
-        public IActionResult DeleteVipRoom(int id)
+        [HttpDelete("delete/{id:Guid}")]
+        public IActionResult DeleteVipRoom(Guid id)
         {
             bool deleted = _vipRoomService.DeleteVipRoomById(id);
             if (!deleted)

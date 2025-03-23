@@ -8,11 +8,14 @@ namespace SystemBroni.Models.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            // делает Email уникальным
             builder
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
             builder.Property(x => x.Email).HasMaxLength(100);
+
+            
         }
     }
 }
