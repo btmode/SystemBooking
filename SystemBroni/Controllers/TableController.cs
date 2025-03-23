@@ -18,7 +18,7 @@ namespace SystemBroni.Controllers
 
         // Создать нововый стол
         [HttpPost("create")]
-        public ActionResult<Table> CreateNewTable([FromBody] Table table)
+        public ActionResult<Table> CreateNewTable(Table table)
         {
             if (table == null)
                 return BadRequest("Переданы некорректные данные пользователя");
