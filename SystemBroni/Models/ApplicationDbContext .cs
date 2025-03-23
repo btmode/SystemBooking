@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Diagnostics;
+using System.Reflection;
 using SystemBroni.Models.Configurations;
 
 namespace SystemBroni.Models;
@@ -20,10 +22,18 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new TableConfiguration()); // Добавляем
-        modelBuilder.ApplyConfiguration(new VipRoomConfiguration()); // Добавляем
-        modelBuilder.ApplyConfiguration(new TableBookingConfiguration());
-        modelBuilder.ApplyConfiguration(new VipRoomBookingConfiguration()); // Добавляем
+
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        stopWatch.Stop();
+
+        TimeSpan ts = stopWatch.Elapsed;
+
+        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+             ts.Hours, ts.Minutes, ts.Seconds,
+             ts.Milliseconds / 10);
+        Console.WriteLine("RunTime " + elapsedTime);
+
     }
 }

@@ -12,14 +12,10 @@ namespace SystemBroni.Models
 
     public class Table
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        [Required]
         public int Number { get; set; } 
 
-        [Required]
         public int Capacity { get; set; } 
  
         public TableStatus Status { get; set; } = TableStatus.Available;

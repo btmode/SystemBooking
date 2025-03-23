@@ -9,7 +9,7 @@ namespace SystemBroni.Models.Configurations
         {
             builder
                 .HasMany<TableBooking>()
-                .WithOne(tb => tb.Table)
+                .WithOne(x => x.Table)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

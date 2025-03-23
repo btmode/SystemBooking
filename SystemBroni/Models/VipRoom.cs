@@ -12,14 +12,10 @@ namespace SystemBroni.Models
     }
     public class VipRoom
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        [Required]
         public string Name { get; set; } 
 
-        [Required]
         public int Capacity { get; set; } 
 
         public VipRoomStatus Status { get; set; } = VipRoomStatus.Available; 

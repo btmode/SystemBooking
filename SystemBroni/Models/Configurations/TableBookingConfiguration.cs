@@ -10,16 +10,14 @@ namespace SystemBroni.Models.Configurations
         {
             // Один пользователь может иметь много бронирований столиков
             builder
-                .HasOne(vb => vb.User)
+                .HasOne(x => x.User)
                 .WithMany()
-                .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Один столик может быть забронирован только один раз
             builder
-                .HasOne(vb => vb.Table)
+                .HasOne(x => x.Table)
                 .WithMany()
-                .HasForeignKey("TableId")
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

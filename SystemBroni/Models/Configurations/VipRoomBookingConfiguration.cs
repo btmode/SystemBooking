@@ -10,16 +10,14 @@ namespace SystemBroni.Models.Configurations
         {
             // Один пользователь может бронировать много комнат
             builder
-                .HasOne(vb => vb.User)
+                .HasOne(x => x.User)
                 .WithMany()
-                .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Одна VIP-комната может быть забронирована только раз
             builder
-                .HasOne(vb => vb.VipRoom)
+                .HasOne(x => x.VipRoom)
                 .WithMany()
-                .HasForeignKey("VipRoomId")
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
