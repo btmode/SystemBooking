@@ -13,9 +13,6 @@ namespace SystemBroni.Models
         public string Email { get; set; }
 
         public string Phone { get; set; }
-
-        // Связь с бронированиями
-        public List<TableBooking> TableBookings { get; set; } = new();
-        public List<VipRoomBooking> VipRoomBookings { get; set; } = new();
+        
     }
 }

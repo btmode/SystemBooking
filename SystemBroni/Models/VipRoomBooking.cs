@@ -6,7 +6,6 @@ namespace SystemBroni.Models
     public class VipRoomBooking
     {
         public Guid Id { get; set; }
-
      
         public User User { get; set; }
        
