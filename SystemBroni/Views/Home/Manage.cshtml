@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Управление записями";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">CRUD Управление</h2>
+    <div class="list-group">
+        <a href="@Url.Action("Index", "TableBooking")" class="list-group-item list-group-item-action">Бронирование столов</a>
+        <a href="@Url.Action("Index", "VipRoomBooking")" class="list-group-item list-group-item-action">Бронирование VIP-комнат</a>
+        <a href="@Url.Action("Index", "User")" class="list-group-item list-group-item-action">Пользователи</a>
+        <a href="@Url.Action("Index", "Table")" class="list-group-item list-group-item-action">Столы</a>
+        <a href="@Url.Action("Index", "VipRoom")" class="list-group-item list-group-item-action">VIP-комнаты</a>
+    </div>
+</div>

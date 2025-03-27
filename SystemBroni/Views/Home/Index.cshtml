@@ -8,6 +8,11 @@
         <div class="claude-monet ml-3">
             <h1 class="fw-bold">Claude Monet</h1>
         </div>
+
+        <div class="text-center mt-4">
+            <a href="/Crud/Menu" class="btn btn-primary">CRUD Управление</a>
+        </div>
+
         <div class="social-icons ml-3">
             <a href="https://t.me/btmode" class="social-link">
                 <img src="~/Picture/telegram-logo-36.png" alt="Telegram" class="mx-2">
@@ -39,7 +44,7 @@
                             <div class="card-body">
                                 <h3 class="card-title">Столик</h3>
                                 <p class="card-text">Зарезервируйте удобный столик в общем зале</p>
-                                <a class="btn btn-success">Забронировать</a>
+                                <a href="@Url.Action("Index", "TableBooking")" class="btn btn-success">Забронировать</a>
                             </div>
                         </div>
                     </div>
@@ -49,7 +54,7 @@
                             <div class="card-body">
                                 <h3 class="card-title">VIP-комната</h3>
                                 <p class="card-text">Забронируйте приватную VIP-комнату</p>
-                                <a class="btn btn-success">Забронировать</a>
+                                <a href="@Url.Action("Index", "VipRoomBooking")" class="btn btn-success">Забронировать</a>
                             </div>
                         </div>
                     </div>

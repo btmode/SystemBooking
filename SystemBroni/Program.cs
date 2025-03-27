@@ -18,7 +18,8 @@ namespace SystemBroni
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITableService, TableService>();
             builder.Services.AddScoped<IVipRoomService, VipRoomService>();
-
+            builder.Services.AddScoped<IVipRoomBookingService, VipRoomBookingService>();
+            builder.Services.AddScoped<ITableBookingService, TableBookingService>();
 
             var app = builder.Build();
 
