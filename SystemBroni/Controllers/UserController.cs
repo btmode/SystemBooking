@@ -3,12 +3,38 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using SystemBroni.Models;
 using SystemBroni.Service;
+using static System.Net.WebRequestMethods;
 
 namespace SystemBroni.Controllers
 {
-    [Route("api/user")]
+
+    public interface IResult
+    {
+        public void Execute();
+    }
+
+    //public class Result : IResult
+    //{
+    //    public int Code { get; set; } = 0;
+
+    //    public void Execute()
+    //    {
+    //        Http.End(Code);
+    //    }
+    //}
+
+    //public class OKResult : Result
+    //{
+    //    public int Code { get; set; } = 200;
+    //}
+
+    //public class BadResult : Result
+    //{
+    //    public int Code { get; set; } = 400;
+    //}
+
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
         private readonly IUserService _userService;
 
@@ -17,55 +43,41 @@ namespace SystemBroni.Controllers
             _userService = userService;
         }
 
-        // Создать нового пользователя
-        [HttpPost("create")]
-        public ActionResult<User> CreateNewUser(User user)
+        [Route("/User/Index")]
+        public IActionResult Index()
         {
-            if (user == null)
-                return BadRequest("Переданы некорректные данные пользователя");
-
-            var createdUser = _userService.CreateUser(user);
-
-            return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
+            var users = _userService.GetUsers();
+            return View(users);
         }
 
-        // Получить всех пользователя
-        [HttpGet("get/all")]
-        public ActionResult<IEnumerable<User>> GetAllUsers()
-        {           
-            return Ok(_userService.GetUsers());
+        [Route("/User/Create")]
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
         }
 
-        // Получить пользователя по ID
-        [HttpGet("get/{id:Guid}")]
-        public ActionResult<User> GetUser(Guid id)
+        [Route("api/User/Create")]
+        [HttpPost]
+        public IActionResult ApiCreate(User user)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
-                return NotFound($"По данному ID ({id}) пользователь не найден");
+            _userService.CreateUser(user);
+            if (user == null) return BadRequest();
             return Ok(user);
         }
-        
 
-        // Обновить данные пользователя
-        [HttpPut("update/{id:Guid}")]
-        public IActionResult UpdateUser(Guid id, User updatedUser)
+        [Route("/User/Create")]
+        [HttpPost]
+        public IActionResult Create(User user)
         {
-            bool updated = _userService.UpdateUser(id, updatedUser);
-            if (!updated)
-                return NotFound($"По данному ID ({id}) никаких данных нет");
-            return NoContent();
+            _userService.CreateUser(user);
+            return RedirectToAction("Index");
         }
 
-        // Удалить пользователя по ID
-        [HttpDelete("delete/{id:Guid}")]
-        public IActionResult DeleteUser(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            bool deleted = _userService.DeleteUserById(id);
-            if (!deleted)
-                 return NotFound($"По данному ID ({id}) никаких данных нет");
-            return NoContent();
+            _userService.DeleteUserById(id);
+            return RedirectToAction("Index");
         }
-
     }
 }
