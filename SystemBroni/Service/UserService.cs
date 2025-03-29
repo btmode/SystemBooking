@@ -8,6 +8,7 @@ namespace SystemBroni.Service
     {
         public User CreateUser(User user);
         public IEnumerable<User> GetUsers();
+        public User GetUserByName(string name);
         public User GetUserById(Guid id);
         public bool UpdateUser(Guid id, User user);
         public bool DeleteUserById(Guid id);
@@ -35,10 +36,16 @@ namespace SystemBroni.Service
         // получаем всех юзеров сразу
         public IEnumerable<User> GetUsers()
         {
+            //return _context.Users.OrderBy(u => u.Id).Skip(2).Take(1).ToList();
             return _context.Users.OrderBy(u => u.Id).ToList();
         }
 
-        // получаем юзера по id 
+        
+        public User GetUserByName(string name)
+        {
+            return _context.Users.FirstOrDefault(u=>u.Name == name);                 
+        }
+
         public User GetUserById(Guid id)
         {
             return _context.Users.Find(id);
@@ -52,7 +59,6 @@ namespace SystemBroni.Service
                 return false;
 
             user.Name = updatedUser.Name;
-            user.Email = updatedUser.Email;
             user.Phone = updatedUser.Phone;
 
             _context.SaveChanges();
@@ -64,13 +70,11 @@ namespace SystemBroni.Service
         {
             var user = _context.Users.Find(id);
 
-            if (user == null)
-                return false;
+            if (user == null)  return false;
 
             _context.Users.Remove(user);
 
             _context.SaveChanges();
-
             return true;
         }
     }

@@ -4,6 +4,13 @@
     ViewData["Title"] = "Список пользователей";
 }
 
+<form asp-action="GetUser" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="name" class="form-control" placeholder="Введите имя пользователя" required />
+        <button href="/User/GetByName/" type="submit" class="btn btn-primary">Найти</button>
+    </div>
+</form>
+
 <h2>Список пользователей</h2>
 
 <div>
@@ -16,7 +23,8 @@
             <th>Имя</th>
             <th>Email</th>
             <th>Телефон</th>
-            <th>Действия</th>
+            <th>Редактировать</th>
+            <th>Удаление</th>
         </tr>
     </thead>
     <tbody>
@@ -27,8 +35,12 @@
                 <td>@user.Email</td>
                 <td>@user.Phone</td>
                 <td>
-                    <a href="@Url.Action("Delete", "User", new { id = user.Id })" class="btn btn-danger">Удалить</a>
+                    <a href="/User/Update/@user.Id" class="btn btn-warning">Редактировать</a>
+                    <a href="/User/Delete/@user.Id" class="btn btn-danger">Удалить</a>
                 </td>
+
+               
+
             </tr>
         }
     </tbody>
