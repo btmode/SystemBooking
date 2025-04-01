@@ -2,46 +2,83 @@
 
 @{
     ViewData["Title"] = "Список пользователей";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
 }
 
-<form asp-action="GetUser" method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="name" class="form-control" placeholder="Введите имя пользователя" required />
-        <button href="/User/GetByName/" type="submit" class="btn btn-primary">Найти</button>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Список пользователей</h2>
+
+    <!-- Форма поиска -->
+    <div class="row mb-3">
+        <div class="col-md-6 mx-auto">
+            <form asp-action="GetByName" method="get" class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Введите имя" required />
+                <button type="submit" class="btn btn-primary">🔍 Найти</button>
+            </form>
+        </div>
     </div>
-</form>
 
-<h2>Список пользователей</h2>
+    <!-- Сообщение об ошибке -->
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-warning text-center">@ViewBag.Message</div>
+    }
 
-<div>
-    <a href="/User/Create" class="btn btn-success">Создать пользователя</a>
-</div>
+    <!-- Кнопка назад к списку -->
+    @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
+    {
+        <div class="text-center mb-3">
+            <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = ViewBag.PageSize })" class="btn btn-secondary">⬅ Назад к списку</a>
+        </div>
+    }
 
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>Имя</th>
-            <th>Email</th>
-            <th>Телефон</th>
-            <th>Редактировать</th>
-            <th>Удаление</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
+    <!-- Кнопка создания пользователя -->
+    <div class="mb-3">
+        <a href="/User/Create" class="btn btn-success">➕ Создать пользователя</a>
+    </div>
+
+    <!-- Таблица пользователей -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Имя</th>
+                    <th>Email</th>
+                    <th>Телефон</th>
+                    <th>Редактировать</th>
+                    <th>Удаление</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>@user.Phone</td>
+                        <td>
+                            <a href="/User/Update/@user.Id" class="btn btn-warning btn-sm">✏ Редактировать</a>
+                        </td>
+                        <td>
+                            <a href="/User/Delete/@user.Id" class="btn btn-danger btn-sm">🗑 Удалить</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагинация -->
+    <div class="d-flex justify-content-center mt-4">
+        @if (pageNumber > 1)
         {
-            <tr>
-                <td>@user.Name</td>
-                <td>@user.Email</td>
-                <td>@user.Phone</td>
-                <td>
-                    <a href="/User/Update/@user.Id" class="btn btn-warning">Редактировать</a>
-                    <a href="/User/Delete/@user.Id" class="btn btn-danger">Удалить</a>
-                </td>
-
-               
-
-            </tr>
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary me-2">⬅ Назад</a>
         }
-    </tbody>
-</table>
+
+        @if (Model.Any() && Model.Count() == pageSize)
+        {
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед ➡</a>
+        }
+    </div>
+</div>

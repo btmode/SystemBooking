@@ -6,7 +6,7 @@ using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
-    
+
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -29,7 +29,7 @@ namespace SystemBroni.Controllers
         [Route("/User/Create")]
         [HttpPost]
         public IActionResult Create(User user)
-        {          
+        {
             _userService.CreateUser(user);
             return RedirectToAction("GetAll");
         }
@@ -39,26 +39,36 @@ namespace SystemBroni.Controllers
 
         [Route("/User/GetAll")]
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            var users = _userService.GetUsers();
+            var users = _userService.GetUsers(pageNumber, pageSize);
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
             return View(users);
         }
 
 
-    
+
         [HttpGet("/User/GetByName")]
-        public ActionResult<User> GetUser(string name)
+        public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
         {
-            var user = _userService.GetUserByName(name);
+            var users = _userService.GetUserByName(name, pageNumber, pageSize);
 
-            if (user == null)
-                return NotFound($"С таким именем ({name}) пользователь не найден ");
+            if (users == null || !users.Any())
+            {
+                ViewBag.Message = $"❌ Пользователь с именем \"{name}\" не найден.";
+                return View("GetAll", _userService.GetUsers(ViewBag.PageNumber, ViewBag.PageSize)); // Возвращаем список всех
+            }
 
-            return RedirectToAction("GetAll");
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchQuery = name;
+
+            return View("GetAll", users);
         }
 
-        
+
         [Route("/User/Update/{id:Guid}")]
         [HttpGet]
         public IActionResult Update(Guid id)
@@ -68,44 +78,31 @@ namespace SystemBroni.Controllers
 
             return View(user);
         }
-
-       
+                
+      
         [Route("/User/Update/{id:Guid}")]
         [HttpPost]
         public IActionResult Update(Guid id, User updatedUser)
         {
-            if (updatedUser == null) return BadRequest("Некорректные данные");
+            if (updatedUser == null) 
+                return BadRequest("Некорректные данные");
 
             bool updated = _userService.UpdateUser(id, updatedUser);
 
-            if (!updated) return NotFound("Пользователь не найден");
+            if (!updated) 
+                return NotFound("Пользователь не найден");
 
-            return RedirectToAction("GetAll");
+            return RedirectToAction("GetAll"); 
         }
 
 
-        
-        [HttpGet("/User/Delete/{id:Guid}")] 
+
+        [HttpGet("/User/Delete/{id:Guid}")]
         public IActionResult Delete(Guid id)
         {
             _userService.DeleteUserById(id);
             return RedirectToAction("GetAll");
         }
-
-
-
-        // Обновить данные пользователя
-        [Route("/User/Update")]
-        [HttpPut("update/{id:Guid}")]
-        public IActionResult UpdateUser(Guid id, User updatedUser)
-        {
-            bool updated = _userService.UpdateUser(id, updatedUser);
-            if (!updated)
-                return NotFound($"По данному ID ({id}) никаких данных нет");
-
-            return NoContent();
-        }
-
 
 
     }

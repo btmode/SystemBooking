@@ -7,8 +7,8 @@ namespace SystemBroni.Service
     public interface IUserService
     {
         public User CreateUser(User user);
-        public IEnumerable<User> GetUsers();
-        public User GetUserByName(string name);
+        public IEnumerable<User> GetUsers(int pageNumber, int pageSize);
+        public IEnumerable<User> GetUserByName(string name, int pageNumber, int pageSize);
         public User GetUserById(Guid id);
         public bool UpdateUser(Guid id, User user);
         public bool DeleteUserById(Guid id);
@@ -24,7 +24,7 @@ namespace SystemBroni.Service
             _context = context;
         }
         
-        // создаем нового юзера
+        
         public User CreateUser(User user)
         {
             _context.Users.Add(user);
@@ -33,25 +33,34 @@ namespace SystemBroni.Service
             return user;
         }
 
-        // получаем всех юзеров сразу
-        public IEnumerable<User> GetUsers()
+       
+        public IEnumerable<User> GetUsers(int pageNumber, int pageSize)
         {
-            //return _context.Users.OrderBy(u => u.Id).Skip(2).Take(1).ToList();
-            return _context.Users.OrderBy(u => u.Id).ToList();
+            return _context.Users.OrderBy(u => u.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+           
         }
 
         
-        public User GetUserByName(string name)
+        public IEnumerable<User> GetUserByName(string name, int pageNumber, int pageSize)
         {
-            return _context.Users.FirstOrDefault(u=>u.Name == name);                 
+            return _context.Users
+                .Where(u => u.Name == name)
+                .OrderBy(u => u.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
+
 
         public User GetUserById(Guid id)
         {
             return _context.Users.Find(id);
         }
 
-        // обновляем юзера по id и меняем его данные
+       
         public bool UpdateUser(Guid id, User updatedUser)
         {
             var user = _context.Users.Find(id);
@@ -65,7 +74,7 @@ namespace SystemBroni.Service
             return true;
         }
 
-        // удаляем юзера по id 
+       
         public bool DeleteUserById(Guid id)
         {
             var user = _context.Users.Find(id);

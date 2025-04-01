@@ -4,21 +4,28 @@
     ViewData["Title"] = "Создать пользователя";
 }
 
-<h2>Создать пользователя</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">✍ Создание пользователя</h2>
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Имя</label>
-        <input asp-for="Name" class="form-control"  />
+    <div class="card shadow-lg p-4 bg-white rounded">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Имя</label>
+                <input asp-for="Name" class="form-control" placeholder="Введите имя..." required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Почта</label>
+                <input asp-for="Email" class="form-control" type="email" placeholder="Введите email..." required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Номер телефона</label>
+                <input asp-for="Phone" class="form-control" placeholder="Введите номер телефона..." required />
+            </div>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success px-4">✅ Создать</button>
+                <a href="@Url.Action("GetAll", "User")" class="btn btn-secondary px-4">❌ Отмена</a>
+            </div>
+        </form>
     </div>
-    <div>
-        <label>Почта</label>
-        <input asp-for="Email" class="form-control" type="email"  />
-    </div>
-    <div>
-        <label>Номер телефона</label>
-        <input asp-for="Phone" class="form-control"  />
-    </div>
-    <button type="submit" class="btn btn-success">Создать</button>
-    <a href="@Url.Action("GetAll", "User")" class="btn btn-secondary">Отмена</a>
-</form>
+</div>

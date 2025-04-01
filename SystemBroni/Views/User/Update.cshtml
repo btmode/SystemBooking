@@ -1,20 +1,33 @@
 ﻿@model SystemBroni.Models.User
 
-<h2>Редактирование пользователя</h2>
+@{
+    ViewData["Title"] = "Редактировать пользователя";
+}
 
-<form method="post" action="/User/Update/">
-    <div>
-        <label>Имя:</label>
-        <input type="text" name="Name" value="@Model.Name" required />
+<div class="container mt-4">
+    <h2 class="text-center mb-4">✏ Редактирование пользователя</h2>
+
+    <div class="card shadow-lg p-4 bg-white rounded">
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Имя</label>
+                <input asp-for="Name" class="form-control" placeholder="Введите новое имя..." required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Почта</label>
+                <input asp-for="Email" class="form-control" type="email" placeholder="Введите новый email..." required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Номер телефона</label>
+                <input asp-for="Phone" class="form-control" placeholder="Введите новый номер телефона..." required />
+            </div>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success px-4">💾 Сохранить</button>
+                <a href="@Url.Action("GetAll", "User")" class="btn btn-secondary px-4">❌ Отмена</a>
+            </div>
+        </form>
     </div>
-    <div>
-        <label>Email:</label>
-        <input type="email" name="Email" value="@Model.Email" required />
-    </div>
-    <div>
-        <label>Телефон:</label>
-        <input type="text" name="Phone" value="@Model.Phone" required />
-    </div>
-    <button type="submit">Сохранить</button>
-</form>
-<a href="/User/GetAll">Отмена</a>
+</div>
