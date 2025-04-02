@@ -25,7 +25,6 @@ namespace SystemBroni.Controllers
         }
 
 
-
         [Route("/User/Create")]
         [HttpPost]
         public IActionResult Create(User user)
@@ -33,7 +32,6 @@ namespace SystemBroni.Controllers
             _userService.CreateUser(user);
             return RedirectToAction("GetAll");
         }
-
 
 
 
@@ -49,21 +47,21 @@ namespace SystemBroni.Controllers
         }
 
 
-
         [HttpGet("/User/GetByName")]
         public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
         {
-            var users = _userService.GetUserByName(name, pageNumber, pageSize);
+            var users = _userService.GetUsersByName(name, pageNumber, pageSize);
 
             if (users == null || !users.Any())
             {
                 ViewBag.Message = $"❌ Пользователь с именем \"{name}\" не найден.";
-                return View("GetAll", _userService.GetUsers(ViewBag.PageNumber, ViewBag.PageSize)); // Возвращаем список всех
+                ViewBag.SearchQuery = name;
+                return RedirectToAction("GetAll", new { pageNumber, pageSize });
             }
 
+            ViewBag.SearchQuery = name;
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
-            ViewBag.SearchQuery = name;
 
             return View("GetAll", users);
         }
@@ -74,27 +72,27 @@ namespace SystemBroni.Controllers
         public IActionResult Update(Guid id)
         {
             var user = _userService.GetUserById(id);
-            if (user == null) return NotFound("Пользователь не найден");
+            if (user == null) 
+                return NotFound("Пользователь не найден");
 
             return View(user);
         }
-                
-      
+
+
         [Route("/User/Update/{id:Guid}")]
         [HttpPost]
         public IActionResult Update(Guid id, User updatedUser)
         {
-            if (updatedUser == null) 
+            if (updatedUser == null)
                 return BadRequest("Некорректные данные");
 
             bool updated = _userService.UpdateUser(id, updatedUser);
 
-            if (!updated) 
+            if (!updated)
                 return NotFound("Пользователь не найден");
 
-            return RedirectToAction("GetAll"); 
+            return RedirectToAction("GetAll");
         }
-
 
 
         [HttpGet("/User/Delete/{id:Guid}")]

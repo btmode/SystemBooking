@@ -4,9 +4,8 @@ using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
-    [Route("api/viproom")]
-    [ApiController]
-    public class VipRoomController : ControllerBase
+    
+    public class VipRoomController : Controller
     {
         private readonly IVipRoomService _vipRoomService;
 
@@ -15,58 +14,93 @@ namespace SystemBroni.Controllers
             _vipRoomService = vipRoomService;
         }
 
-        // Создать новую VIP-комнату
-        [HttpPost("create")]
-        public ActionResult<VipRoom> CreateNewVipRoom(VipRoom vipRoom)
-        {
-            if (vipRoom == null)
-                return BadRequest("Переданы некорректные данные");
 
-            var createdVipRoom = _vipRoomService.CreateVipRoom(vipRoom);
-            return CreatedAtAction(nameof(GetVipRoom), new { id = createdVipRoom.Id }, createdVipRoom);
+
+        [Route("/VipRoom/Create")]
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
         }
 
-        // Получить все VIP-комнаты
-        [HttpGet("get/all")]
-        public ActionResult<IEnumerable<VipRoom>> GetAllVipRooms()
+
+        [Route("/VipRoom/Create")]
+        [HttpPost]
+        public IActionResult Create(VipRoom vipRoom)
         {
-            return Ok(_vipRoomService.GetVipRooms());
+
+            _vipRoomService.CreateVipRoom(vipRoom);
+            return RedirectToAction("GetAll");
         }
 
-        // Получить VIP-комнату по ID
-        [HttpGet("get/{id:Guid}")]
-        public ActionResult<VipRoom> GetVipRoom(Guid id)
+        // Вывести все VIP-комнаты (с пагинацией)
+        [HttpGet("/VipRoom/GetAll")]
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+        {
+            var vipRooms = _vipRoomService.GetVipRooms(pageNumber, pageSize);
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            return View(vipRooms);
+        }
+
+        // Найти VIP-комнату по номеру
+        [HttpGet("/VipRoom/GetByName")]
+        public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
+        {
+            var vipRooms = _vipRoomService.GetVipRoomsByNumber(name, pageNumber, pageSize);
+            if (!vipRooms.Any())
+            {
+                ViewBag.Message = $"❌ VIP-комната с номером \"{name}\" не найдена.";
+                return RedirectToAction("GetAll", new { pageNumber, pageSize });
+            }
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            return View("GetAll", vipRooms);
+        }
+
+
+        [HttpGet("/VipRoom/Update/{id:Guid}")]
+        public IActionResult Update(Guid id)
         {
             var vipRoom = _vipRoomService.GetVipRoomById(id);
             if (vipRoom == null)
             {
-                return NotFound($"По ID ({id}) VIP-комната не найдена");
+                return NotFound("Vip комната не найдена");
             }
 
-            return Ok(vipRoom);
+            return View(vipRoom);
         }
 
-        // Обновить данные VIP-комнаты по ID
-        [HttpPut("update/{id:Guid}")]
-        public IActionResult UpdateVipRoom(Guid id, VipRoom updatedVipRoom)
+
+        [HttpPost("/VipRoom/Update/{id:Guid}")]
+        public IActionResult Update(Guid id, VipRoom updatedVipRoom)
         {
+            if (updatedVipRoom == null)
+                return BadRequest("Некорректные данные");
+
             bool updated = _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
             if (!updated)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("GetAll");
+        }
+
+
+        [HttpPost("/VipRoom/Delete/{id:Guid}")]
+        public IActionResult Delete(Guid id)
+        {
+            bool deleted = _vipRoomService.DeleteVipRoomById(id);
+            if (!deleted)
             {
                 return NotFound($"По ID ({id}) VIP-комната не найдена");
             }
 
-            return NoContent();
+            return RedirectToAction("GetAll");
         }
 
-        // Удалить VIP-комнату по ID
-        [HttpDelete("delete/{id:Guid}")]
-        public IActionResult DeleteVipRoom(Guid id)
-        {
-            bool deleted = _vipRoomService.DeleteVipRoomById(id);
-            if (!deleted)
-                return NotFound($"По ID ({id}) VIP-комната не найдена");
-            return NoContent();
-        }
+
     }
 }

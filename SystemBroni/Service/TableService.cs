@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using SystemBroni.Models;
+
 
 namespace SystemBroni.Service
 {
     public interface ITableService
     {
         public Table CreateTable(Table table);
-        public IEnumerable<Table> GetTables();
+        public IEnumerable<Table> GetTables(int pageNumber, int pageSize);
+        public IEnumerable<Table> GetTablesByNumber(int number, int pageNumber, int pageSize);
         public Table GetTableById(Guid id);
         public bool UpdateTable(Guid id, Table updateTable);
         public bool DeleteTableById(Guid id);
@@ -22,7 +24,7 @@ namespace SystemBroni.Service
             _context = context;
         }
 
-        // создать новый стол
+        
         public Table CreateTable(Table table)
         {
             _context.Tables.Add(table);
@@ -31,12 +33,24 @@ namespace SystemBroni.Service
             return table;
         }
 
-        // получаем все столы сразу
-        public IEnumerable<Table> GetTables()
+       
+        public IEnumerable<Table> GetTables(int pageNumber, int pageSize)
         {
-            return _context.Tables.OrderBy(u => u.Id).ToList();
+            return _context.Tables.OrderBy(u => u.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
 
+        public IEnumerable<Table> GetTablesByNumber(int number, int pageNumber, int pageSize)
+        {
+            return _context.Tables
+                .Where(t => t.Number == number)
+                .OrderBy(t => t.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
         public Table GetTableById(Guid id)
         {
             return _context.Tables.Find(id);
@@ -62,9 +76,8 @@ namespace SystemBroni.Service
             var table = _context.Tables.Find(id);
 
             if (table == null)
-            {
                 return false;
-            }
+
             _context.Tables.Remove(table);
 
             _context.SaveChanges();

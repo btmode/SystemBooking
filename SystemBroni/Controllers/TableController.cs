@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using SystemBroni.Models;
 using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
-    [Route("api/table")]
-    [ApiController]
-    public class TableController : ControllerBase
+  
+    public class TableController : Controller
     {
 
         private readonly ITableService _TableService;
@@ -16,59 +17,91 @@ namespace SystemBroni.Controllers
             _TableService = tableService;
         }
 
-        // Создать нововый стол
-        [HttpPost("create")]
-        public ActionResult<Table> CreateNewTable(Table table)
-        {
-            if (table == null)
-                return BadRequest("Переданы некорректные данные пользователя");
 
-            var createdTable = _TableService.CreateTable(table);
-            return CreatedAtAction(nameof(GetTable), new { id = createdTable.Id }, createdTable);
+        [Route("/Table/Create")]
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
         }
 
-        // Получить всех пользователя
-        [HttpGet("get/all")]
-        public ActionResult<IEnumerable<Table>> GetAllTables()
-        {
-            return Ok(_TableService.GetTables());
+
+        [Route("/Table/Create")]
+        [HttpPost]
+        public IActionResult Create(Table table)
+        { 
+            _TableService.CreateTable(table);
+            return RedirectToAction("GetAll"); 
         }
 
-        // Получить стол по ID
-        [HttpGet("get/{id:Guid}")]
-        public ActionResult<Table> GetTable(Guid id)
+
+
+        [Route("/Table/GetAll")]
+        [HttpGet]
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+        {
+            var tables = _TableService.GetTables(pageNumber, pageSize);
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
+            return View(tables);
+        }
+
+        [HttpGet("/Table/GetByNumber")]
+        public IActionResult GetByNumber(int number, int pageNumber = 1, int pageSize = 10)
+        {
+            var tables = _TableService.GetTablesByNumber(number, pageNumber, pageSize);
+
+            if (tables == null || !tables.Any())
+            {
+                ViewBag.Message = $"❌ Стол с номером \"{number}\" не найден.";
+                ViewBag.SearchQuery = number;
+                return RedirectToAction("GetAll", new { pageNumber, pageSize });
+            }
+
+            ViewBag.SearchQuery = number.ToString();
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
+            return View("GetAll", tables);
+        }
+
+
+
+        [Route("/Table/Update/{id:Guid}")]
+        [HttpGet]
+        public IActionResult Update(Guid id)
         {
             var table = _TableService.GetTableById(id);
-            if (table == null)
-            {
-                return NotFound($"По данному ID ({id}) стол не найден");
-            }
+            if (table == null) 
+                return NotFound("Стол не найден");
 
-            return Ok(table);
+            return View(table);
         }
 
 
-        // Обновить данные стола по ID
-        [HttpPut("update/{id:Guid}")]
-        public IActionResult UpdateTables(Guid id, Table updatedTable)
+        [Route("/Table/Update/{id:Guid}")]
+        [HttpPost]
+        public IActionResult Update(Guid id, Table updatedTable)
         {
-            bool updated = _TableService.UpdateTable(id, updatedTable);
-            if (!updated)
-            {
-                return NotFound($"По данному ID ({id}) никаких данных нет");
-            }
+            if (updatedTable == null)
+                return BadRequest("Некорректные данные");
 
-            return NoContent();
+            bool updated = _TableService.UpdateTable(id, updatedTable);
+
+            if (!updated)
+                return NotFound("Стол не найден");
+
+            return RedirectToAction("GetAll"); 
         }
 
-        // Удалить пользователя по ID
-        [HttpDelete("delete/{id:Guid}")]
+        
+        [HttpGet("/Table/Delete/{id:Guid}")]
         public IActionResult DeleteUser(Guid id)
         {
-            bool deleted = _TableService.DeleteTableById(id);
-            if (!deleted)
-                return NotFound($"По данному ID ({id}) никаких данных нет");
-            return NoContent();
+            _TableService.DeleteTableById(id);
+            return RedirectToAction("GetAll");
+           
         }
     }
 }

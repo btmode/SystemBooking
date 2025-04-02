@@ -8,9 +8,9 @@ namespace SystemBroni.Service
     {
         public User CreateUser(User user);
         public IEnumerable<User> GetUsers(int pageNumber, int pageSize);
-        public IEnumerable<User> GetUserByName(string name, int pageNumber, int pageSize);
+        public IEnumerable<User> GetUsersByName(string name, int pageNumber, int pageSize);
         public User GetUserById(Guid id);
-        public bool UpdateUser(Guid id, User user);
+        public bool UpdateUser(Guid id, User updateUser);
         public bool DeleteUserById(Guid id);
 
     }
@@ -44,7 +44,7 @@ namespace SystemBroni.Service
         }
 
         
-        public IEnumerable<User> GetUserByName(string name, int pageNumber, int pageSize)
+        public IEnumerable<User> GetUsersByName(string name, int pageNumber, int pageSize)
         {
             return _context.Users
                 .Where(u => u.Name == name)
@@ -79,7 +79,8 @@ namespace SystemBroni.Service
         {
             var user = _context.Users.Find(id);
 
-            if (user == null)  return false;
+            if (user == null) 
+                return false;
 
             _context.Users.Remove(user);
 

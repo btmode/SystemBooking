@@ -1,0 +1,33 @@
+﻿@model SystemBroni.Models.VipRoom
+
+@{
+    ViewData["Title"] = "Создать VIP-комнату";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">➕ Создать VIP-комнату</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input type="text" name="Name" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Вместимость</label>
+            <input type="number" name="Capacity" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Статус</label>
+            <select name="Status" class="form-control">
+                <option value="Свободна">Свободна</option>
+                <option value="Занята">Занята</option>
+                <option value="На ремонте">На ремонте</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">✅ Создать</button>
+        <a href="@Url.Action("GetAll")" class="btn btn-secondary">❌ Отмена</a>
+    </form>
+</div>

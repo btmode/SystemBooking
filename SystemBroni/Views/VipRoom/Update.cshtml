@@ -1,0 +1,33 @@
+﻿@model SystemBroni.Models.VipRoom
+
+@{
+    ViewData["Title"] = "Редактировать VIP-комнату";
+}
+
+<h2>✏ Редактировать VIP-комнату</h2>
+
+<form asp-action="Update" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Название</label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Вместимость</label>
+        <input asp-for="Capacity" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Статус</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Available">Свободна</option>
+            <option value="Booked">Забронирован</option>
+            <option value="Occupied">Занята</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">💾 Сохранить</button>
+    <a href="/VipRoom/GetAll" class="btn btn-secondary">❌ Отмена</a>
+</form>

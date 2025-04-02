@@ -5,8 +5,9 @@ namespace SystemBroni.Service
 {
     public interface IVipRoomService
     {
-        public VipRoom CreateVipRoom(VipRoom VipRoom);
-        public IEnumerable<VipRoom> GetVipRooms();
+        public VipRoom CreateVipRoom(VipRoom vipRoom);
+        public IEnumerable<VipRoom> GetVipRooms(int pageNumber, int pageSize);
+        public IEnumerable<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize);
         public VipRoom GetVipRoomById(Guid id);
         public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom);
         public bool DeleteVipRoomById(Guid id);
@@ -21,34 +22,46 @@ namespace SystemBroni.Service
         {
             _context = context;
         }
-       
-        // создать новую комнату
+
+
         public VipRoom CreateVipRoom(VipRoom vipRoom)
         {
-            
             _context.VipRooms.Add(vipRoom);
-
             _context.SaveChanges();
             return vipRoom;
         }
 
-        // получаем все столы сразу
-        public IEnumerable<VipRoom> GetVipRooms()
+        // Получаем все комнаты с пагинацией
+        public IEnumerable<VipRoom> GetVipRooms(int pageNumber, int pageSize)
         {
-            return _context.VipRooms.OrderBy(u => u.Id).ToList();
+            return _context.VipRooms
+                .OrderBy(v => v.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
 
-        // Получить VipRoom по ID
+        // Поиск комнаты по номеру с учетом пагинации
+        public IEnumerable<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize)
+        {
+            return _context.VipRooms
+                .Where(v => v.Name == name)
+                .OrderBy(v => v.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+       
         public VipRoom GetVipRoomById(Guid id)
         {
             return _context.VipRooms.Find(id);
         }
 
-        // Обновить данные VipRoom
+        
         public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom)
         {
             var vipRoom = _context.VipRooms.Find(id);
-
             if (vipRoom == null)
                 return false;
 
@@ -60,18 +73,15 @@ namespace SystemBroni.Service
             return true;
         }
 
-        // Удалить VipRoom по ID
+        
         public bool DeleteVipRoomById(Guid id)
         {
             var vipRoom = _context.VipRooms.Find(id);
-
             if (vipRoom == null)
-            {
                 return false;
-            }
-            _context.VipRooms.Remove(vipRoom);
 
-            _context.SaveChanges(); 
+            _context.VipRooms.Remove(vipRoom);
+            _context.SaveChanges();
             return true;
         }
     }

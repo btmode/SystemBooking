@@ -2,38 +2,38 @@
 
 @{
     ViewData["Title"] = "Список пользователей";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
 }
 
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Список пользователей</h2>
+    <h2 class="text-center mb-4">📋 Список пользователей</h2>
 
-    <!-- Форма поиска -->
-    <div class="row mb-3">
-        <div class="col-md-6 mx-auto">
-            <form asp-action="GetUser" method="get" class="input-group">
-                <input type="text" name="name" class="form-control" placeholder="Введите имя пользователя" required />
-                <button type="submit" class="btn btn-primary">🔍 Найти</button>
-            </form>
+    <form asp-action="GetByNumber" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="name" class="form-control" placeholder="Введите имя" value="@ViewBag.SearchQuery" required />
+            <button type="submit" class="btn btn-primary">🔍 Найти</button>
         </div>
-    </div>
+    </form>
 
-    <!-- Кнопка создания пользователя -->
-    <div class="text-center mb-3">
-        <a href="/User/Create" class="btn btn-success">➕ Создать пользователя</a>
-    </div>
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-danger text-center fw-bold">@ViewBag.Message</div>
+    }
 
-    <!-- Таблица пользователей -->
-    <div class="table-responsive">
-        <table class="table table-striped table-hover text-center align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Имя</th>
-                    <th>Email</th>
-                    <th>Телефон</th>
-                    <th colspan="2">Действия</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Телефон</th>
+                <th>Редактировать</th>
+                <th>Удаление</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
                 @foreach (var user in Model)
                 {
                     <tr>
@@ -41,14 +41,29 @@
                         <td>@user.Email</td>
                         <td>@user.Phone</td>
                         <td>
-                            <a href="/User/Update/@user.Id" class="btn btn-warning btn-sm">✏ Редактировать</a>
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Delete", "User", new { id = user.Id })" class="btn btn-danger btn-sm">🗑 Удалить</a>
+                            <a href="/User/Update/@user.Id" class="btn btn-warning">✏ Редактировать</a>
+                            <a href="/User/Delete/@user.Id" class="btn btn-danger">🗑 Удалить</a>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Нет данных</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Model.Any()) 
+    {
+        <div class="text-center mt-3">
+            @if (pageNumber > 1)
+            {
+                <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary">← Назад</a>
+            }
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед →</a>
+        </div>
+    }
 </div>

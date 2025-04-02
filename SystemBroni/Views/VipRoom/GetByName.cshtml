@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SystemBroni.Models.VipRoom>
+
+@{
+    ViewData["Title"] = "Результаты поиска VIP-комнаты";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">🔍 Результаты поиска</h2>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-danger text-center fw-bold">@ViewBag.Message</div>
+    }
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Вместимость</th>
+                <th>Статус</th>
+                <th>Редактировать</th>
+                <th>Удаление</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var room in Model)
+                {
+                    <tr>
+                        <td>@room.Name</td>
+                        <td>@room.Capacity</td>
+                        <td>@room.Status</td>
+                        <td>
+                            <a href="/VipRoom/Update/@room.Id" class="btn btn-warning">✏ Редактировать</a>
+                        </td>
+                        <td>
+                            <a href="/VipRoom/Delete/@room.Id" class="btn btn-danger">🗑 Удалить</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Нет данных</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-center mt-3">
+        <a href="@Url.Action("GetAll")" class="btn btn-secondary">⬅ Назад к списку</a>
+    </div>
+</div>

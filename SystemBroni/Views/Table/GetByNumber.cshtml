@@ -1,0 +1,82 @@
+﻿@model IEnumerable<SystemBroni.Models.Table>
+
+@{
+    ViewData["Title"] = "Список столов";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">🍽 Список столов</h2>
+
+    <form asp-action="GetByName" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="number" class="form-control" placeholder="Введите номер стола" value="@ViewBag.SearchQuery" required />
+            <button type="submit" class="btn btn-primary">🔍 Найти</button>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-danger text-center fw-bold">@ViewBag.Message</div>
+    }
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Номер стола</th>
+                <th>Вместимость</th>
+                <th>Статус</th>
+                <th>Редактировать</th>
+                <th>Удаление</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var table in Model)
+                {
+                    <tr>
+                        <td>@table.Number</td>
+                        <td>@table.Capacity</td>
+                        <td>
+                            @if (table.Status == TableStatus.Available)
+                            {
+                                <span class="badge bg-success">Свободен</span>
+                            }
+                            else if (table.Status == TableStatus.Booked)
+                            {
+                                <span class="badge bg-warning">Забронирован</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Занят</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="/Table/Update/@table.Id" class="btn btn-warning">✏ Редактировать</a>
+                            <a href="/Table/Delete/@table.Id" class="btn btn-danger">🗑 Удалить</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Нет данных</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Model.Any())
+    {
+        <div class="text-center mt-3">
+            @if (pageNumber > 1)
+            {
+                <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary">← Назад</a>
+            }
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед →</a>
+        </div>
+    }
+</div>

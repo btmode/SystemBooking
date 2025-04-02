@@ -9,6 +9,7 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Список пользователей</h2>
 
+
     <!-- Форма поиска -->
     <div class="row mb-3">
         <div class="col-md-6 mx-auto">
@@ -32,6 +33,11 @@
             <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = ViewBag.PageSize })" class="btn btn-secondary">⬅ Назад к списку</a>
         </div>
     }
+
+    <!-- Кнопка для возврата в панель админа -->
+    <div class="mb-3">
+        <a href="/Admin/Panel" class="btn btn-light">🔙 Вернуться в панель </a>
+    </div>
 
     <!-- Кнопка создания пользователя -->
     <div class="mb-3">
