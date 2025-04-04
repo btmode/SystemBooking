@@ -71,7 +71,7 @@ namespace SystemBroni.Controllers
 
             var updated = _vipRoomBookingService.UpdateBooking(id, updateBooking);
 
-            if (!updated)
+            if (updated == null)
             {
                 return NotFound();
             }
@@ -87,7 +87,7 @@ namespace SystemBroni.Controllers
         {
             var deleted = _vipRoomBookingService.DeleteBooking(id);
 
-            if (!deleted)
+            if (deleted == null)
             {
                 return NotFound();
             }

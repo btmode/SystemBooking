@@ -10,7 +10,8 @@ namespace SystemBroni.Models
         public User User { get; set; }
        
         public VipRoom VipRoom { get; set; }
-        
-        public DateTime BookingTime { get; set; }
+
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
     }
 }

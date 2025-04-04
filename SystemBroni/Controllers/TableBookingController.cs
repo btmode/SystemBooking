@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SystemBroni.Models;
 using SystemBroni.Service;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Table = SystemBroni.Models.Table;
 
 namespace SystemBroni.Controllers
 {
-
-    [Route("api/tablebooking")]
-    [ApiController]
-    public class TableBookingController : ControllerBase
+    public class TableBookingController : Controller
     {
         private readonly ITableBookingService _tableBookingService;
 
@@ -17,78 +17,86 @@ namespace SystemBroni.Controllers
         }
 
 
-
-        // Создать бронирование
-        [HttpPost]
-        [Route("create")]       
-        public ActionResult<TableBooking> CreateTableBooking([FromBody] TableBooking booking)
+        [HttpGet("/TableBooking/Create")]
+        public IActionResult Create()
         {
-            if (booking == null)
-            {
-                return BadRequest("Данные введены не корректно");
-            }
+            ViewBag.Tables = _tableBookingService.GetAllTables();
 
-            var createdBooking = _tableBookingService.CreateBooking(booking);
-
-            return CreatedAtAction(nameof(GetByIdTableBooking), new { id = createdBooking.Id }, createdBooking);
+            return View();
         }
 
 
-        // Получить все бронирования столов
-        [HttpGet]
-        [Route("get/all")]
-        public ActionResult<IEnumerable<TableBooking>> GetAllTableBooking()
+        [HttpPost("/TableBooking/Create")]
+        public IActionResult Create(TableBooking booking, Table table)
         {
-            return Ok(_tableBookingService.GetAllBooking());
+            _tableBookingService.Create(booking, table);
+            return RedirectToAction("GetAll");
         }
 
 
-        // Получить бронирование по ID
-        [HttpGet]
-        [Route("get/{id:Guid}")]
-        public ActionResult<TableBooking> GetByIdTableBooking(Guid id)
+        [HttpGet("/TableBooking/GetAll")]
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            var booking = _tableBookingService.GetByIdBooking(id);
-            if (booking == null)
+            var bookings = _tableBookingService.GetAll(pageNumber, pageSize);
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
+            return View(bookings);
+        }
+
+        [HttpGet("/TableBooking/GetByUserName")]
+        public IActionResult GetByUserName(string name, int pageNumber = 1, int pageSize = 10)
+        {
+            var bookings = _tableBookingService.GetBookingsByUserName(name, pageNumber, pageSize);
+
+            if (bookings == null || !bookings.Any())
             {
-                return NotFound();
+                ViewBag.Message = $"❌ Бронирование для {name} не найдено.";
+                ViewBag.SearchQuery = name;
+                return RedirectToAction("GetAll", new { pageNumber, pageSize });
             }
 
-            return Ok(booking);
-        }        
+            ViewBag.SearchQuery = name;
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
 
-
-        // Обновить бронирование
-        [HttpPut]
-        [Route("update/{id:Guid}")]
-        public IActionResult UpdateTableBooking(Guid id, [FromBody] TableBooking updateBooking)
-        {
-            if (updateBooking == null) return BadRequest("Данные введены не корректно");
-
-            var updated = _tableBookingService.UpdateBooking(id, updateBooking);
-
-            if (!updated)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return View("GetAll", bookings);
         }
 
 
-        // Удалить бронирование
-        [HttpDelete]
-        [Route("delete/{id:Guid}")]
-        public IActionResult DeleteTableBooking(Guid id)
+        [HttpGet("/TableBooking/Update/{id:Guid}")]
+        public IActionResult Update(Guid id)
         {
-            var deleted = _tableBookingService.DeleteBooking(id);
+            var booking = _tableBookingService.GetById(id);
 
-            if (!deleted)
-            {
-                return NotFound();
-            }
+            if (booking == null) 
+                return NotFound("Бронирование не найдено");
 
-            return NoContent();
+            return View(booking);
+        }
+
+
+        [HttpPost("/TableBooking/Update/{id:Guid}")]
+        public IActionResult Update(TableBooking updatedBooking)
+        {
+            if (updatedBooking == null)
+                return BadRequest("Некорректные данные");
+
+            var updated = _tableBookingService.UpdateBooking(updatedBooking);
+
+            if (updated == null)            
+                NotFound("не найден");
+            
+            return RedirectToAction("GetAll");
+        }
+
+
+        [HttpGet("/TableBooking/Delete/{id:Guid}")]
+        public IActionResult Delete(Guid id)
+        {
+            _tableBookingService.Delete(id);
+            return RedirectToAction("GetAll");
         }
     }
 }

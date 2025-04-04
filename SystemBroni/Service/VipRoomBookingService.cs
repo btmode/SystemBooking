@@ -6,11 +6,11 @@ namespace SystemBroni.Service
 {
     public interface IVipRoomBookingService
     {
-        public IEnumerable<VipRoomBooking> GetAllBooking();
-        public VipRoomBooking GetByIdBooking(Guid id);
+        public List<VipRoomBooking> GetAllBooking();
+        public VipRoomBooking? GetByIdBooking(Guid id);
         public VipRoomBooking CreateBooking(VipRoomBooking booking);
-        public bool UpdateBooking(Guid id, VipRoomBooking updateBooking);
-        public bool DeleteBooking(Guid id);
+        public Task UpdateBooking(Guid id, VipRoomBooking updateBooking);
+        public Task DeleteBooking(Guid id);
     }
 
     public class VipRoomBookingService : IVipRoomBookingService
@@ -29,7 +29,7 @@ namespace SystemBroni.Service
             return booking;
         }
 
-        public IEnumerable<VipRoomBooking> GetAllBooking()
+        public List<VipRoomBooking> GetAllBooking()
         {
             return _context.VipRoomBookings
                 .Include(b => b.User)
@@ -37,7 +37,7 @@ namespace SystemBroni.Service
                 .ToList();
         }
 
-        public VipRoomBooking GetByIdBooking(Guid id)
+        public VipRoomBooking? GetByIdBooking(Guid id)
         {
             return _context.VipRoomBookings
                 .Include(b => b.User)
@@ -45,7 +45,7 @@ namespace SystemBroni.Service
                 .FirstOrDefault(b => b.Id == id);
         }
 
-        public bool UpdateBooking(Guid id, VipRoomBooking updateBooking)
+        public async Task UpdateBooking(Guid id, VipRoomBooking updateBooking)
         {
             var booking = _context.VipRoomBookings
                 .Include(b => b.User)
@@ -53,11 +53,9 @@ namespace SystemBroni.Service
                 .FirstOrDefault(b => b.Id == id);
 
             if (booking == null)
-            {
-                return false;
-            }
+                throw new Exception("");
 
-            // Обновляем данные пользователя
+
             var user = _context.Users.Find(updateBooking.User.Id);
             if (user != null)
             {
@@ -65,10 +63,9 @@ namespace SystemBroni.Service
                 user.Phone = updateBooking.User.Phone;
             }
 
-            // Обновляем время бронирования
-            booking.BookingTime = updateBooking.BookingTime;
+            //booking.BookingTime = updateBooking.BookingTime;
 
-            // Обновляем VIP-комнату, если она изменена
+         
             if (booking.VipRoom.Id != updateBooking.VipRoom.Id)
             {
                 var newVipRoom = _context.VipRooms.Find(updateBooking.VipRoom.Id);
@@ -78,18 +75,19 @@ namespace SystemBroni.Service
                 }
             }
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
+           
         }
 
-        public bool DeleteBooking(Guid id)
+        public async Task DeleteBooking(Guid id)
         {
             var booking = _context.VipRoomBookings.Find(id);
-            if (booking == null) return false;
+            if (booking == null)
+                throw new Exception("");
 
             _context.VipRoomBookings.Remove(booking);
-            _context.SaveChanges();
-            return true;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 using SystemBroni.Models;
 
 
@@ -7,12 +8,12 @@ namespace SystemBroni.Service
 {
     public interface ITableService
     {
-        public Table CreateTable(Table table);
-        public IEnumerable<Table> GetTables(int pageNumber, int pageSize);
-        public IEnumerable<Table> GetTablesByNumber(int number, int pageNumber, int pageSize);
-        public Table GetTableById(Guid id);
-        public bool UpdateTable(Guid id, Table updateTable);
-        public bool DeleteTableById(Guid id);
+        public Task<Table> CreateTable(Table table);
+        public List<Table> GetTables(int pageNumber, int pageSize);
+        public List<Table> GetTablesByNumber(string name, int pageNumber, int pageSize);
+        public Table? GetTableById(Guid id);
+        public Task UpdateTable(Guid id, Table updateTable);
+        public Task DeleteTableById(Guid id);
     }
 
     public class TableService : ITableService
@@ -24,17 +25,18 @@ namespace SystemBroni.Service
             _context = context;
         }
 
-        
-        public Table CreateTable(Table table)
-        {
-            _context.Tables.Add(table);
 
-            _context.SaveChanges();
+        // это я переделал под Async
+        public async Task<Table> CreateTable(Table table)
+        {
+            await _context.Tables.AddAsync(table);
+
+            await _context.SaveChangesAsync();
             return table;
         }
 
-       
-        public IEnumerable<Table> GetTables(int pageNumber, int pageSize)
+        // здесь не нужен Async
+        public List<Table> GetTables(int pageNumber, int pageSize)
         {
             return _context.Tables.OrderBy(u => u.Id)
                 .Skip((pageNumber - 1) * pageSize)
@@ -42,46 +44,50 @@ namespace SystemBroni.Service
                 .ToList();
         }
 
-        public IEnumerable<Table> GetTablesByNumber(int number, int pageNumber, int pageSize)
+        // здесь не нужен Async
+        public List<Table> GetTablesByNumber(string name, int pageNumber, int pageSize)
         {
+
             return _context.Tables
-                .Where(t => t.Number == number)
-                .OrderBy(t => t.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+               .Where(t => t.Name.Contains(name))
+               .OrderBy(t => t.Id)
+               .Skip((pageNumber - 1) * pageSize)
+               .Take(pageSize)
+               .ToList();
         }
-        public Table GetTableById(Guid id)
+
+        // здесь не нужен Async
+        public Table? GetTableById(Guid id)
         {
             return _context.Tables.Find(id);
         }
 
-        public bool UpdateTable(Guid id, Table updateTable)
+        // здесь нужен Async только для SaveChangesAsync
+        public async Task UpdateTable(Guid id, Table updateTable)
         {
             var table = _context.Tables.Find(id);
 
             if (table == null)
-                return false;
+                throw new Exception("");
 
-            table.Number = updateTable.Number;
+            table.Name = updateTable.Name;
             table.Capacity = updateTable.Capacity;
-            table.Status = updateTable.Status;
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
         }
 
-        public bool DeleteTableById(Guid id)
+        // здесь нужен Async только для SaveChangesAsync
+        public async Task DeleteTableById(Guid id)
         {
             var table = _context.Tables.Find(id);
 
             if (table == null)
-                return false;
+                throw new Exception("");
 
             _context.Tables.Remove(table);
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
+
         }
     }
 }

@@ -48,18 +48,18 @@ namespace SystemBroni.Controllers
         }
 
         [HttpGet("/Table/GetByNumber")]
-        public IActionResult GetByNumber(int number, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetByNumber(string name, int pageNumber = 1, int pageSize = 10)
         {
-            var tables = _TableService.GetTablesByNumber(number, pageNumber, pageSize);
+            var tables = _TableService.GetTablesByNumber(name, pageNumber, pageSize);
 
             if (tables == null || !tables.Any())
             {
-                ViewBag.Message = $"❌ Стол с номером \"{number}\" не найден.";
-                ViewBag.SearchQuery = number;
+                ViewBag.Message = $"❌ Стол с номером ({name}) не найден.";
+                ViewBag.SearchQuery = name;
                 return RedirectToAction("GetAll", new { pageNumber, pageSize });
             }
 
-            ViewBag.SearchQuery = number.ToString();
+            ViewBag.SearchQuery = name;
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
 
@@ -87,9 +87,9 @@ namespace SystemBroni.Controllers
             if (updatedTable == null)
                 return BadRequest("Некорректные данные");
 
-            bool updated = _TableService.UpdateTable(id, updatedTable);
+            var updated = _TableService.UpdateTable(id, updatedTable);
 
-            if (!updated)
+            if (updated == null)
                 return NotFound("Стол не найден");
 
             return RedirectToAction("GetAll"); 

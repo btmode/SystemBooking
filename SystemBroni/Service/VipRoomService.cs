@@ -5,15 +5,15 @@ namespace SystemBroni.Service
 {
     public interface IVipRoomService
     {
-        public VipRoom CreateVipRoom(VipRoom vipRoom);
-        public IEnumerable<VipRoom> GetVipRooms(int pageNumber, int pageSize);
-        public IEnumerable<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize);
-        public VipRoom GetVipRoomById(Guid id);
-        public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom);
-        public bool DeleteVipRoomById(Guid id);
+        public Task<VipRoom> CreateVipRoom(VipRoom vipRoom);
+        public List<VipRoom> GetVipRooms(int pageNumber, int pageSize);
+        public List<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize);
+        public VipRoom? GetVipRoomById(Guid id);
+        public Task UpdateVipRoom(Guid id, VipRoom updateVipRoom);
+        public Task DeleteVipRoomById(Guid id);
     }
 
-    
+
     public class VipRoomService : IVipRoomService
     {
         private readonly ApplicationDbContext _context;
@@ -23,16 +23,18 @@ namespace SystemBroni.Service
             _context = context;
         }
 
-
-        public VipRoom CreateVipRoom(VipRoom vipRoom)
+        // здесь я переделал под Async
+        public async Task<VipRoom> CreateVipRoom(VipRoom vipRoom)
         {
-            _context.VipRooms.Add(vipRoom);
-            _context.SaveChanges();
+            await _context.VipRooms.AddAsync(vipRoom);
+
+            await _context.SaveChangesAsync();
             return vipRoom;
         }
 
-        // Получаем все комнаты с пагинацией
-        public IEnumerable<VipRoom> GetVipRooms(int pageNumber, int pageSize)
+
+        // здесь Async не нужен
+        public List<VipRoom> GetVipRooms(int pageNumber, int pageSize)
         {
             return _context.VipRooms
                 .OrderBy(v => v.Id)
@@ -41,48 +43,46 @@ namespace SystemBroni.Service
                 .ToList();
         }
 
-        // Поиск комнаты по номеру с учетом пагинации
-        public IEnumerable<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize)
+        // здесь Async не нужен
+        public List<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize)
         {
             return _context.VipRooms
-                .Where(v => v.Name == name)
+                .Where(v => v.Name.Contains(name))
                 .OrderBy(v => v.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
         }
 
-       
-        public VipRoom GetVipRoomById(Guid id)
+        // здесь Async не нужен
+        public VipRoom? GetVipRoomById(Guid id)
         {
             return _context.VipRooms.Find(id);
         }
 
-        
-        public bool UpdateVipRoom(Guid id, VipRoom updateVipRoom)
+        // здесь Async нужен только для SaveChangesAsync
+        public async Task UpdateVipRoom(Guid id, VipRoom updateVipRoom)
         {
             var vipRoom = _context.VipRooms.Find(id);
             if (vipRoom == null)
-                return false;
+                throw new Exception("");
 
             vipRoom.Name = updateVipRoom.Name;
             vipRoom.Capacity = updateVipRoom.Capacity;
-            vipRoom.Status = updateVipRoom.Status;
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
         }
 
-        
-        public bool DeleteVipRoomById(Guid id)
+        // здесь Async нужен только для SaveChangesAsync
+        public async Task DeleteVipRoomById(Guid id)
         {
             var vipRoom = _context.VipRooms.Find(id);
             if (vipRoom == null)
-                return false;
+                throw new Exception("");
 
             _context.VipRooms.Remove(vipRoom);
-            _context.SaveChanges();
-            return true;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

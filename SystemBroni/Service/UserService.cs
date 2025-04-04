@@ -6,12 +6,12 @@ namespace SystemBroni.Service
 {
     public interface IUserService
     {
-        public User CreateUser(User user);
-        public IEnumerable<User> GetUsers(int pageNumber, int pageSize);
-        public IEnumerable<User> GetUsersByName(string name, int pageNumber, int pageSize);
-        public User GetUserById(Guid id);
-        public bool UpdateUser(Guid id, User updateUser);
-        public bool DeleteUserById(Guid id);
+        public Task<User> CreateUser(User user);
+        public List<User> GetUsers(int pageNumber, int pageSize);
+        public List<User> GetUsersByName(string name, int pageNumber, int pageSize);
+        public User? GetUserById(Guid id);
+        public Task UpdateUser(Guid id, User updateUser);
+        public Task DeleteUserById(Guid id);
 
     }
 
@@ -23,69 +23,66 @@ namespace SystemBroni.Service
         {
             _context = context;
         }
-        
-        
-        public User CreateUser(User user)
-        {
-            _context.Users.Add(user);
 
-            _context.SaveChanges();
+        // это я переделал под Async
+        public async Task<User> CreateUser(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
             return user;
         }
 
-       
-        public IEnumerable<User> GetUsers(int pageNumber, int pageSize)
+        //здесь не нужно делать Async
+        public List<User> GetUsers(int pageNumber, int pageSize)
         {
-            return _context.Users.OrderBy(u => u.Id)
+            return  _context.Users.OrderBy(u => u.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-           
+
         }
 
-        
-        public IEnumerable<User> GetUsersByName(string name, int pageNumber, int pageSize)
+        //здесь не нужно делать Async
+        public List<User> GetUsersByName(string name, int pageNumber, int pageSize)
         {
             return _context.Users
-                .Where(u => u.Name == name)
+                .Where(u => u.Name.Contains(name))
                 .OrderBy(u => u.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
         }
 
-
-        public User GetUserById(Guid id)
+        //здесь не нужно делать Async
+        public User? GetUserById(Guid id)
         {
             return _context.Users.Find(id);
         }
 
-       
-        public bool UpdateUser(Guid id, User updatedUser)
+        //здесь нужен async только для SaveChangesAsync
+        public async Task UpdateUser(Guid id, User updatedUser)
         {
             var user = _context.Users.Find(id);
             if (user == null)
-                return false;
+                throw new Exception("");
 
             user.Name = updatedUser.Name;
             user.Phone = updatedUser.Phone;
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
         }
 
-       
-        public bool DeleteUserById(Guid id)
+        //здесь нужен async только для SaveChangesAsync
+        public async Task DeleteUserById(Guid id)
         {
-            var user = _context.Users.Find(id);
+            var user =  _context.Users.Find(id);
 
-            if (user == null) 
-                return false;
+            if (user == null)
+                throw new Exception("");
 
             _context.Users.Remove(user);
 
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
         }
     }
 }

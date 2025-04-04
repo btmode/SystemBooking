@@ -4,6 +4,7 @@
     ViewData["Title"] = "Список VIP-комнат";
     int pageNumber = ViewBag.PageNumber;
     int pageSize = ViewBag.PageSize;
+    int startIndex = (pageNumber - 1) * pageSize + 1;
 }
 
 <div class="container mt-5">
@@ -48,41 +49,39 @@
         <table class="table table-striped table-hover text-center align-middle">
             <thead class="table-dark">
                 <tr>
+                    <th>#</th>
                     <th>Название</th>
                     <th>Вместимость</th>
-                    <th>Статус</th>
                     <th>Редактировать</th>
                     <th>Удаление</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var vipRoom in Model)
+                @if (Model != null && Model.Any())
+                {
+                    int i = startIndex;
+                    @foreach (var vipRoom in Model)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@vipRoom.Name</td>
+                            <td>@vipRoom.Capacity</td>                            
+
+                            <!-- Кнопки -->
+                            <td>
+                                <a href="/VipRoom/Update/@vipRoom.Id" class="btn btn-warning btn-sm">✏ Редактировать</a>
+                            </td>
+                            <td>
+                                <a href="/VipRoom/Delete/@vipRoom.Id" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@vipRoom.Name</td>
-                        <td>@vipRoom.Capacity</td>
-                        <td>
-                            @if (vipRoom.Status == VipRoomStatus.Available)
-                            {
-                                <span class="badge bg-success">Свободна</span>
-                            }
-                            else if (vipRoom.Status == VipRoomStatus.Booked)
-                            {
-                                <span class="badge bg-warning">Забронирована</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Занята</span>
-                            }
-                        </td>
-
-                        <!-- Кнопки -->
-                        <td>
-                            <a href="/VipRoom/Update/@vipRoom.Id" class="btn btn-warning btn-sm">✏ Редактировать</a>
-                        </td>
-                        <td>
-                            <a href="/VipRoom/Delete/@vipRoom.Id" class="btn btn-danger btn-sm">🗑 Удалить</a>
-                        </td>
+                        <td colspan="6" class="text-center">Нет данных</td>
                     </tr>
                 }
             </tbody>

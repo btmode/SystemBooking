@@ -26,7 +26,6 @@
             <tr>
                 <th>Номер стола</th>
                 <th>Вместимость</th>
-                <th>Статус</th>
                 <th>Редактировать</th>
                 <th>Удаление</th>
             </tr>
@@ -37,22 +36,9 @@
                 @foreach (var table in Model)
                 {
                     <tr>
-                        <td>@table.Number</td>
+                        <td>@table.Name</td>
                         <td>@table.Capacity</td>
-                        <td>
-                            @if (table.Status == TableStatus.Available)
-                            {
-                                <span class="badge bg-success">Свободен</span>
-                            }
-                            else if (table.Status == TableStatus.Booked)
-                            {
-                                <span class="badge bg-warning">Забронирован</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Занят</span>
-                            }
-                        </td>
+                       
                         <td>
                             <a href="/Table/Update/@table.Id" class="btn btn-warning">✏ Редактировать</a>
                             <a href="/Table/Delete/@table.Id" class="btn btn-danger">🗑 Удалить</a>

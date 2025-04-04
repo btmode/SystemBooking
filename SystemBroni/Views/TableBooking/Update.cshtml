@@ -1,0 +1,37 @@
+﻿@model SystemBroni.Models.TableBooking
+
+<h2>Редактировать бронирование</h2>
+
+<form method="post" action="@Url.Action("Update", "TableBooking", new { id = Model.Id })">
+    <div>
+        <label>Имя пользователя</label>
+        <input type="text" name="User.Name" value="@Model.User.Name" required />
+    </div>
+    <div>
+        <label>Телефон</label>
+        <input type="text" name="User.Phone" value="@Model.User.Phone" required />
+    </div>
+    <div>
+        <label>Стол</label>
+        <select name="Table.Id">
+            @foreach (var table in ViewBag.Tables)
+            {
+                <option value="@table.Id" selected="@(table.Id == Model.Table.Id ? "selected" : null)">
+                    @table.Name (Вместимость: @table.Capacity)
+                </option>
+            }
+        </select>
+    </div>
+    <div>
+        <label>Начало бронирования</label>
+        <input type="datetime-local" name="StartTime" value="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+    <div>
+        <label>Окончание бронирования</label>
+        <input type="datetime-local" name="EndTime" value="@Model.EndTime.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-warning">Сохранить</button>
+    <a href="@Url.Action("GetAll", "TableBooking")" class="btn btn-secondary">Отмена</a>
+</form>

@@ -33,29 +33,32 @@ namespace SystemBroni.Controllers
             return RedirectToAction("GetAll");
         }
 
-        // Вывести все VIP-комнаты (с пагинацией)
+       
         [HttpGet("/VipRoom/GetAll")]
         public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
             var vipRooms = _vipRoomService.GetVipRooms(pageNumber, pageSize);
+
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
+
             return View(vipRooms);
         }
 
-        // Найти VIP-комнату по номеру
+       
         [HttpGet("/VipRoom/GetByName")]
         public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
         {
             var vipRooms = _vipRoomService.GetVipRoomsByNumber(name, pageNumber, pageSize);
             if (!vipRooms.Any())
             {
-                ViewBag.Message = $"❌ VIP-комната с номером \"{name}\" не найдена.";
+                ViewBag.Message = $"❌ VIP-комната с номером ({name}) не найдена.";
                 return RedirectToAction("GetAll", new { pageNumber, pageSize });
             }
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
+
             return View("GetAll", vipRooms);
         }
 
@@ -64,10 +67,10 @@ namespace SystemBroni.Controllers
         public IActionResult Update(Guid id)
         {
             var vipRoom = _vipRoomService.GetVipRoomById(id);
-            if (vipRoom == null)
-            {
+
+            if (vipRoom == null)            
                 return NotFound("Vip комната не найдена");
-            }
+            
 
             return View(vipRoom);
         }
@@ -79,25 +82,20 @@ namespace SystemBroni.Controllers
             if (updatedVipRoom == null)
                 return BadRequest("Некорректные данные");
 
-            bool updated = _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
-            if (!updated)
-            {
-                return NotFound();
-            }
+            var updated = _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
+
+            if (updated == null)            
+                return NotFound("Пользователь с таким {id} не найден");
+            
 
             return RedirectToAction("GetAll");
         }
 
 
-        [HttpPost("/VipRoom/Delete/{id:Guid}")]
+        [HttpGet("/VipRoom/Delete/{id:Guid}")]
         public IActionResult Delete(Guid id)
         {
-            bool deleted = _vipRoomService.DeleteVipRoomById(id);
-            if (!deleted)
-            {
-                return NotFound($"По ID ({id}) VIP-комната не найдена");
-            }
-
+            _vipRoomService.DeleteVipRoomById(id);        
             return RedirectToAction("GetAll");
         }
 
