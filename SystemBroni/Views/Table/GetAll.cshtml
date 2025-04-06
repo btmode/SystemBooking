@@ -12,14 +12,13 @@
 
 
     <!-- Форма поиска -->
-    <div class="row mb-3">        
+    <div class="row mb-3">
         <div class="col-md-6 mx-auto">
-            <form asp-action="GetByNumber" method="get" class="input-group">
-                <input type="text" name="number" class="form-control" placeholder="Введите номер стола" required />
+            <form asp-action="GetAll" method="get" class="input-group">
+                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery" placeholder="Введите номер стола" required />
                 <button type="submit" class="btn btn-primary">🔍 Найти</button>
             </form>
         </div>
-
     </div>
 
 
@@ -65,7 +64,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if(Model!=null && Model.Any())
+                @if (Model != null && Model.Any())
                 {
                     int i = startIndex;
                     @foreach (var table in Model)
@@ -73,7 +72,7 @@
                         <tr>
                             <td>@i</td>
                             <td>@table.Name</td>
-                            <td>@table.Capacity</td>                           
+                            <td>@table.Capacity</td>
 
                             <!-- Разделенные кнопки -->
                             <td>
@@ -90,7 +89,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center">Нет данных</td>
+                        <td colspan="5" class="text-center">Нет данных</td>
                     </tr>
                 }
 
@@ -102,12 +101,12 @@
     <div class="text-center mt-3">
         @if (pageNumber > 1)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary">← Назад</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary me-2">⬅ Назад</a>
         }
 
-        @if (Model.Count() == pageSize)
+        @if (Model?.Count() == pageSize)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед →</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary">Вперед →</a>
         }
     </div>
 

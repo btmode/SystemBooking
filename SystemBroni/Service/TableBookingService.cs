@@ -8,7 +8,7 @@ namespace SystemBroni.Service
 {
     public interface ITableBookingService
     {
-        public Task<TableBooking> Create(TableBooking booking, Table table);
+        public Task<TableBooking> Create(TableBooking booking, Table table, User user);
         public List<TableBooking> GetAll(int pageNumber, int pageSize);
         public List<TableBooking> GetBookingsByUserName(string name, int pageNumber, int pageSize);
         public TableBooking? GetById(Guid id);
@@ -34,46 +34,52 @@ namespace SystemBroni.Service
                           ((b.StartTime < endTime) && (b.EndTime > startTime)));
         }
 
-        public async Task<TableBooking> Create(TableBooking booking, Table table)
+        public async Task<TableBooking> Create(TableBooking booking, Table table, User user)
         {
-            var existingUser =  _context.Users
-                        .FirstOrDefault(u => u.Email == booking.User.Email || u.Phone == booking.User.Phone);
-
-
-            if (existingUser == null)
+            try
             {
-                var newUser = new User
+                var existingUser = _context.Users
+                       .FirstOrDefault(u => u.Email == user.Email || u.Phone == user.Phone);
+
+
+                if (existingUser == null)
                 {
-                    Name = booking.User.Name,
-                    Email = booking.User.Email,
-                    Phone = booking.User.Phone
-                };
+                    var newUser = new User
+                    {
+                        Name = booking.User.Name,
+                        Email = booking.User.Email,
+                        Phone = booking.User.Phone
+                    };
 
-                await _context.Users.AddAsync(newUser);
-                booking.User = newUser;
+                    await _context.Users.AddAsync(newUser);
+                }
+                else
+                {
+                    booking.User = existingUser;
+                }
+
+                var existingTable = _context.Tables
+                          .FirstOrDefault(t => t.Id == table.Id);
+
+                if (existingTable == null)
+                    throw new Exception("Столик не найден");
+
+                if (!IsTableAvailable(existingTable.Id, booking.StartTime, booking.EndTime))
+                    throw new Exception("Столик уже забронирован на выбранное время");
+
+                booking.Table = existingTable;
+                
+
+                await _context.TableBookings.AddAsync(booking);
+
+                await _context.SaveChangesAsync();
+                return booking;
             }
-            else
+            catch (DbUpdateException ex)
             {
-                booking.User = existingUser;
+                throw new Exception("Пользователь с таким email или номером телефона уже существует.");
             }
 
-            var existingTable =  _context.Tables.FirstOrDefault(t => t.Id == table.Id);
-
-            if (existingTable == null)
-                throw new Exception("Столик не найден");
-
-            if (!IsTableAvailable(existingTable.Id, booking.StartTime, booking.EndTime))
-                throw new Exception("Столик уже забронирован на выбранное время");
-
-            booking.Table = existingTable;
-
-            booking.StartTime = DateTime.SpecifyKind(booking.StartTime, DateTimeKind.Utc);
-            booking.EndTime = DateTime.SpecifyKind(booking.EndTime, DateTimeKind.Utc);
-
-            await _context.TableBookings.AddAsync(booking);
-
-            await _context.SaveChangesAsync();
-            return booking;
         }
 
 

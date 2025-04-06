@@ -14,6 +14,13 @@ namespace SystemBroni
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Время жизни сессии
+                options.Cookie.HttpOnly = true; // Безопасность
+                options.Cookie.IsEssential = true; // Важный куки
+            });
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITableService, TableService>();
@@ -33,7 +40,7 @@ namespace SystemBroni
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapControllerRoute(

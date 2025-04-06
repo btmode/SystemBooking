@@ -61,6 +61,7 @@
         <div class="text-center mt-3">
             @if (pageNumber > 1)
             {
+
                 <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary">← Назад</a>
             }
             <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед →</a>

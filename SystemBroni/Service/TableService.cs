@@ -10,7 +10,7 @@ namespace SystemBroni.Service
     {
         public Task<Table> CreateTable(Table table);
         public List<Table> GetTables(int pageNumber, int pageSize);
-        public List<Table> GetTablesByNumber(string name, int pageNumber, int pageSize);
+        public List<Table> GetTablesByName(string name, int pageNumber, int pageSize);
         public Table? GetTableById(Guid id);
         public Task UpdateTable(Guid id, Table updateTable);
         public Task DeleteTableById(Guid id);
@@ -45,7 +45,7 @@ namespace SystemBroni.Service
         }
 
         // здесь не нужен Async
-        public List<Table> GetTablesByNumber(string name, int pageNumber, int pageSize)
+        public List<Table> GetTablesByName(string name, int pageNumber, int pageSize)
         {
 
             return _context.Tables

@@ -7,7 +7,7 @@ namespace SystemBroni.Service
     {
         public Task<VipRoom> CreateVipRoom(VipRoom vipRoom);
         public List<VipRoom> GetVipRooms(int pageNumber, int pageSize);
-        public List<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize);
+        public List<VipRoom> GetVipRoomsByName(string name, int pageNumber, int pageSize);
         public VipRoom? GetVipRoomById(Guid id);
         public Task UpdateVipRoom(Guid id, VipRoom updateVipRoom);
         public Task DeleteVipRoomById(Guid id);
@@ -44,7 +44,7 @@ namespace SystemBroni.Service
         }
 
         // здесь Async не нужен
-        public List<VipRoom> GetVipRoomsByNumber(string name, int pageNumber, int pageSize)
+        public List<VipRoom> GetVipRoomsByName(string name, int pageNumber, int pageSize)
         {
             return _context.VipRooms
                 .Where(v => v.Name.Contains(name))

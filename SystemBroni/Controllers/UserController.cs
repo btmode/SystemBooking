@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 using SystemBroni.Models;
 using SystemBroni.Service;
 
@@ -34,9 +35,33 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("/User/GetAll")]
-        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
         {
-            var users = _userService.GetUsers(pageNumber, pageSize);
+            List<User> users;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                HttpContext.Session.SetString("SearchQuery", name);
+
+                users = _userService.GetUsersByName(name, pageNumber, pageSize);
+                ViewBag.SearchQuery = name;
+            }
+            else
+            {
+                
+                var sessionSearchQuery = HttpContext.Session.GetString("SearchQuery");
+
+                if (!string.IsNullOrEmpty(sessionSearchQuery))
+                {
+                    users = _userService.GetUsersByName(sessionSearchQuery, pageNumber, pageSize);
+                    ViewBag.SearchQuery = sessionSearchQuery;
+                }
+                else
+                {
+                    users = _userService.GetUsers(pageNumber, pageSize);
+                }
+            }
+
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
 
@@ -44,25 +69,11 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/User/GetByName")]
-        public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
-        {
-            var users = _userService.GetUsersByName(name, pageNumber, pageSize);
-
-            if (users == null || !users.Any())
-            {
-                //ModelState.AddModelError($"❌ Пользователь с именем ({name}) не найден.");
-                ViewBag.Message = $"❌ Пользователь с именем \"{name}\" не найден.";
-                ViewBag.SearchQuery = name;
-                return RedirectToAction("GetAll", new { pageNumber, pageSize });
-            }
-
-            ViewBag.SearchQuery = name;
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
-
-            return View("GetAll", users);
-        }
+        //[HttpGet("/User/GetByName")]
+        //public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
+        //{
+        //    return RedirectToAction("GetAll", new { pageNumber, pageSize, name });
+        //}
 
 
         [HttpGet("/User/Update/{id:Guid}")]

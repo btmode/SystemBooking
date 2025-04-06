@@ -13,9 +13,10 @@ namespace SystemBroni.Models.Configurations
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            builder.Property(x => x.Email).HasMaxLength(100);
-
-            
+            // делает Phone уникальным
+            builder
+                .HasIndex(p => p.Phone)
+                .IsUnique();
         }
     }
 }

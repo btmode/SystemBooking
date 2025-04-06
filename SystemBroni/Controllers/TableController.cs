@@ -6,15 +6,15 @@ using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
-  
+
     public class TableController : Controller
     {
 
-        private readonly ITableService _TableService;
+        private readonly ITableService _tableService;
 
         public TableController(ITableService tableService)
         {
-            _TableService = tableService;
+            _tableService = tableService;
         }
 
 
@@ -29,42 +29,69 @@ namespace SystemBroni.Controllers
         [Route("/Table/Create")]
         [HttpPost]
         public IActionResult Create(Table table)
-        { 
-            _TableService.CreateTable(table);
-            return RedirectToAction("GetAll"); 
+        {
+            _tableService.CreateTable(table);
+            return RedirectToAction("GetAll");
         }
 
 
 
         [Route("/Table/GetAll")]
         [HttpGet]
-        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
         {
-            var tables = _TableService.GetTables(pageNumber, pageSize);
+            List<Table> tables;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                HttpContext.Session.SetString("SeacrhQuery", name);
+
+                tables = _tableService.
+                    GetTablesByName(name, pageNumber, pageSize);
+
+                ViewBag.SearchQuery = name;
+            }
+            else
+            {
+                var sessionSearchQuery = HttpContext.Session.GetString("SeacrhQuery");
+
+                if (!string.IsNullOrEmpty(sessionSearchQuery))
+                {
+                    tables = _tableService.
+                        GetTablesByName(sessionSearchQuery, pageNumber, pageSize);
+
+                    ViewBag.SearchQuery = sessionSearchQuery;
+                }
+                else
+                {
+                    tables = _tableService.GetTables(pageNumber, pageSize);
+                }
+            }
+
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
 
             return View(tables);
         }
 
-        [HttpGet("/Table/GetByNumber")]
-        public IActionResult GetByNumber(string name, int pageNumber = 1, int pageSize = 10)
-        {
-            var tables = _TableService.GetTablesByNumber(name, pageNumber, pageSize);
+        //[HttpGet("/Table/GetByNumber")]
+        //public IActionResult GetByNumber(string name, int pageNumber = 1, int pageSize = 10)
+        //{
+        //    var tables = _tableService.GetTablesByName(name, pageNumber, pageSize);
 
-            if (tables == null || !tables.Any())
-            {
-                ViewBag.Message = $"❌ Стол с номером ({name}) не найден.";
-                ViewBag.SearchQuery = name;
-                return RedirectToAction("GetAll", new { pageNumber, pageSize });
-            }
+        //    if (tables == null || !tables.Any())
+        //    {
+        //        ViewBag.Message = $"❌ Стол с номером ({name}) не найден.";
+        //        ViewBag.SearchQuery = name;
+        //        return RedirectToAction("GetAll", new { pageNumber, pageSize });
+        //    }
 
-            ViewBag.SearchQuery = name;
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
+        //    ViewBag.SearchQuery = name;
+        //    ViewBag.PageNumber = pageNumber;
+        //    ViewBag.PageSize = pageSize;
 
-            return View("GetAll", tables);
-        }
+        //    return View("GetAll", tables);
+        //}
 
 
 
@@ -72,8 +99,8 @@ namespace SystemBroni.Controllers
         [HttpGet]
         public IActionResult Update(Guid id)
         {
-            var table = _TableService.GetTableById(id);
-            if (table == null) 
+            var table = _tableService.GetTableById(id);
+            if (table == null)
                 return NotFound("Стол не найден");
 
             return View(table);
@@ -87,21 +114,21 @@ namespace SystemBroni.Controllers
             if (updatedTable == null)
                 return BadRequest("Некорректные данные");
 
-            var updated = _TableService.UpdateTable(id, updatedTable);
+            var updated = _tableService.UpdateTable(id, updatedTable);
 
             if (updated == null)
                 return NotFound("Стол не найден");
 
-            return RedirectToAction("GetAll"); 
+            return RedirectToAction("GetAll");
         }
 
-        
+
         [HttpGet("/Table/Delete/{id:Guid}")]
         public IActionResult DeleteUser(Guid id)
         {
-            _TableService.DeleteTableById(id);
+            _tableService.DeleteTableById(id);
             return RedirectToAction("GetAll");
-           
+
         }
     }
 }

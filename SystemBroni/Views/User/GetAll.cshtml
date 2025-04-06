@@ -14,8 +14,8 @@
     <!-- Форма поиска -->
     <div class="row mb-3">
         <div class="col-md-6 mx-auto">
-            <form asp-action="GetByName" method="get" class="input-group">
-                <input type="text" name="name" class="form-control" placeholder="Введите имя" required />
+            <form asp-action="GetAll" method="get" class="input-group">
+                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery" placeholder="Введите имя" required />
                 <button type="submit" class="btn btn-primary">🔍 Найти</button>
             </form>
         </div>
@@ -95,12 +95,12 @@
     <div class="d-flex justify-content-center mt-4">
         @if (pageNumber > 1)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize })" class="btn btn-primary me-2">⬅ Назад</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary me-2">⬅ Назад</a>
         }
 
-        @if (Model.Any() && Model.Count() == pageSize)
+        @if (Model?.Count() == pageSize)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize })" class="btn btn-primary">Вперед ➡</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary">Вперед ➡</a>
         }
     </div>
 </div>

@@ -35,7 +35,9 @@ namespace SystemBroni.Service
         //здесь не нужно делать Async
         public List<User> GetUsers(int pageNumber, int pageSize)
         {
-            return  _context.Users.OrderBy(u => u.Id)
+            
+            return _context.Users
+                .OrderBy(u => u.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
