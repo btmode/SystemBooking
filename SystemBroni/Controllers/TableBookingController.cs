@@ -47,7 +47,7 @@ namespace SystemBroni.Controllers
                 bookings = _tableBookingService.
                     GetBookingsByUserName(name,pageNumber, pageSize);
 
-                ViewBag.SearchQuery = name;
+                ViewBag.SearchQuery = name;//
             }
             else
             {
