@@ -1,10 +1,8 @@
-﻿@model IEnumerable<SystemBroni.Models.User>
+﻿@model SystemBroni.Views.GetAllViewModelUser;
 
 @{
     ViewData["Title"] = "Список пользователей";
-    int pageNumber = ViewBag.PageNumber;
-    int pageSize = ViewBag.PageSize;
-    int startIndex = (pageNumber - 1) * pageSize + 1;
+    var startIndex = (Model.PageNumber - 1) * Model.PageSize + 1;
 }
 
 <div class="container mt-4">
@@ -15,27 +13,25 @@
     <div class="row mb-3">
         <div class="col-md-6 mx-auto">
             <form asp-action="GetAll" method="get" class="input-group">
-                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery"
-                       placeholder="Введите имя" required/>
+                <input type="text" name="term" class="form-control" value="@Model.Term" placeholder="Введите имя"
+                       required/>
                 <button type="submit" class="btn btn-primary">🔍 Найти</button>
             </form>
         </div>
     </div>
 
-    <!-- Сообщение об ошибке -->
-    @if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <div class="alert alert-warning text-center">@ViewBag.Message</div>
-    }
 
     <!-- Кнопка назад к списку -->
-    @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
-    {
-        <div class="text-center mb-3">
-            <a href="@Url.Action("GetAll", new { resetSearch = true, pageNumber = 1, pageSize = ViewBag.PageSize })"
-               class="btn btn-secondary">⬅ Назад к списку</a>
-        </div>
-    }
+    <div class="text-center mb-3">
+        <a href="@Url.Action("GetAll", new
+                 {
+                     pageNumber = Model.PageNumber,
+                     pageSize = Model.PageSize
+                 })"
+
+           class="btn btn-secondary">⬅ Назад к списку</a>
+    </div>
+
 
     <!-- Кнопка для возврата в панель админа -->
     <div class="mb-3">
@@ -61,10 +57,10 @@
             </tr>
             </thead>
             <tbody>
-            @if (Model != null && Model.Any())
+            @if (Model.Users.Any())
             {
                 int i = startIndex;
-                @foreach (var user in Model)
+                @foreach (var user in Model.Users)
                 {
                     <tr>
                         <td>@i</td>
@@ -95,15 +91,27 @@
 
     <!-- Пагинация -->
     <div class="d-flex justify-content-center mt-4">
-        @if (pageNumber > 1)
+        @if (Model.PageNumber > 1)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize, name = ViewBag.SearchQuery })"
+            <a href="@Url.Action("GetAll", new
+                     {
+                         pageNumber = Model.PageNumber - 1,
+                         pageSize = Model.PageSize,
+                         name = ViewBag.SearchQuery
+                     })"
+
                class="btn btn-primary me-2">⬅ Назад</a>
         }
 
-        @if (Model?.Count() == pageSize)
+        @if (Model.Users.Count() == Model.PageSize)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize, name = ViewBag.SearchQuery })"
+            <a href="@Url.Action("GetAll", new
+                     {
+                         pageNumber = Model.PageNumber + 1,
+                         pageSize = Model.PageSize,
+                         term = Model.Term
+                     })"
+
                class="btn btn-primary">Вперед ➡</a>
         }
     </div>

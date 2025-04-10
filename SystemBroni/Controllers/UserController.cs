@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Xml.Linq;
 using SystemBroni.Models;
 using SystemBroni.Service;
+using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
@@ -39,20 +40,21 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("GetAll")]
-        // Todo: remove resetSearch
-        public IActionResult GetAll(string term = "", bool resetSearch = false, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
             // logger.log(LogLevel.Information, "Начался поиск всех пользователей");
-            // Todo: Term
-            ViewBag.SearchQuery = term;
 
             var users = _userService.GetUsersByName(term, pageNumber, pageSize);
 
-            // Todo: ViewModel
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
+            
 
-            return View(users);
+            return View(new GetAllViewModelUser()
+            {
+                PageNumber = pageNumber, 
+                PageSize = pageSize,
+                Users = users,
+                Term = term
+            });
         }
 
         [HttpGet("Update/{id:Guid}")]
