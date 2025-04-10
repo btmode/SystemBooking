@@ -6,7 +6,6 @@ using SystemBroni.Views;
 namespace SystemBroni.Controllers
 {
     [Route("TableBooking")]
-    [ApiController]
     public class TableBookingController : Controller
     {
         private readonly ITableBookingService _tableBookingService;

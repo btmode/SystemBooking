@@ -1,6 +1,6 @@
-using SystemBroni.Models;
 
-namespace SystemBroni.Views;
+
+namespace SystemBroni.Models;
 
 // Какие поля нужно отправить в Html
 public class GetAllViewModel

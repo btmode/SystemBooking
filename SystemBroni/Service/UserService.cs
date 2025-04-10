@@ -7,7 +7,6 @@ namespace SystemBroni.Service
     public interface IUserService
     {
         public Task<User> CreateUser(User user);
-        public List<User> GetUsers(int pageNumber, int pageSize);
         public List<User> GetUsersByName(string name, int pageNumber, int pageSize);
         public User? GetUserById(Guid id);
         public Task UpdateUser(Guid id, User updateUser);     
@@ -32,19 +31,6 @@ namespace SystemBroni.Service
             return user;
         }
 
-   
-        public List<User> GetUsers(int pageNumber, int pageSize)
-        {
-            
-            return _context.Users
-                .OrderBy(u => u.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-        }
-
- 
         public List<User> GetUsersByName(string name, int pageNumber, int pageSize)
         {
             return _context.Users
@@ -54,7 +40,6 @@ namespace SystemBroni.Service
                 .Take(pageSize)
                 .ToList();
         }
-
     
         public User? GetUserById(Guid id)
         {

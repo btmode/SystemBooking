@@ -8,24 +8,27 @@ using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
+     [Route("User")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
+        
+        // Через ILogger подключить логгер, который будет записывать в файл. path = C://log.txt
+        public UserController(IUserService userService, ILogger logger)
         {
             _userService = userService;
+            logger.Log(LogLevel.Information, "User controller created");
         }
 
 
-        [HttpGet("/User/Create")]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             return View();
         }
 
 
-        [HttpPost("/User/Create")]
+        [HttpPost("Create")]
         public IActionResult Create(User user)
         {
             _userService.CreateUser(user);
@@ -33,41 +36,17 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/User/GetAll")]
-        public IActionResult GetAll(string name, bool resetSearch = false, int pageNumber = 1, int pageSize = 10)
+        [HttpGet("GetAll")]
+        // Todo: remove resetSearch
+        public IActionResult GetAll(string term = "", bool resetSearch = false, int pageNumber = 1, int pageSize = 10)
         {
-            List<User> users;
+            // logger.log(LogLevel.Information, "Начался поиск всех пользователей");
+            // Todo: Term
+            ViewBag.SearchQuery = term;
 
-            if (resetSearch)
-            {
-                HttpContext.Session.Remove("SearchQuery");
-                ViewBag.resetSearch = null;
-            }
-            else if (!string.IsNullOrEmpty(name))
-            {
-                HttpContext.Session.SetString("SearchQuery", name);
-                ViewBag.SearchQuery = name;
-            }
-            else
-            {
-                var sessionSearchQuery = HttpContext.Session.GetString("SearchQuery");
+            var users = _userService.GetUsersByName(term, pageNumber, pageSize);
 
-                if (!string.IsNullOrEmpty(sessionSearchQuery))
-                {
-                    name = sessionSearchQuery;
-                    ViewBag.SearchQuery = sessionSearchQuery;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                users = _userService.GetUsersByName(name, pageNumber, pageSize);
-            }
-            else
-            {
-                users = _userService.GetUsers(pageNumber, pageSize);
-            }
-
+            // Todo: ViewModel
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
 
@@ -82,7 +61,7 @@ namespace SystemBroni.Controllers
         //}
 
 
-        [HttpGet("/User/Update/{id:Guid}")]
+        [HttpGet("Update/{id:Guid}")]
         public IActionResult Update(Guid id)
         {
             var user = _userService.GetUserById(id);
@@ -93,7 +72,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpPost("/User/Update/{id:Guid}")]
+        [HttpPost("Update/{id:Guid}")]
         public IActionResult Update(Guid id, User updatedUser)
         {
             if (updatedUser == null)
@@ -108,7 +87,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/User/Delete/{id:Guid}")]
+        [HttpGet("Delete/{id:Guid}")]
         public IActionResult Delete(Guid id)
         {
             _userService.DeleteUserById(id);
