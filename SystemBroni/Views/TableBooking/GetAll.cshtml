@@ -1,21 +1,19 @@
-﻿@model IEnumerable<SystemBroni.Models.TableBooking>
+﻿@model SystemBroni.Views.GetAllViewModel;
 
 @{
     ViewData["Title"] = "Список бронирований";
-    int pageNumber = ViewBag.PageNumber;
-    int pageSize = ViewBag.PageSize;
-    int startIndex = (pageNumber - 1) * pageSize + 1;
+    var startIndex = (Model.PageNumber - 1) * Model.PageSize + 1;
 }
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">Список бронирований</h2>
 
-    
     <!-- Форма поиска -->
     <div class="row mb-3">
         <div class="col-md-6 mx-auto">
             <form asp-action="GetAll" method="get" class="input-group">
-                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery" placeholder="Введите имя пользователя" required />
+                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery"
+                       placeholder="Введите имя пользователя" required/>
                 <button type="submit" class="btn btn-primary">🔍 Найти</button>
             </form>
         </div>
@@ -31,7 +29,8 @@
     @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
     {
         <div class="text-center mb-3">
-            <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = ViewBag.PageSize })" class="btn btn-secondary">⬅ Назад к списку</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = ViewBag.PageSize })"
+               class="btn btn-secondary">⬅ Назад к списку</a>
         </div>
     }
 
@@ -49,51 +48,52 @@
     <div class="table-responsive">
         <table class="table table-striped table-hover text-center align-middle">
             <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Имя пользователя</th>
-                    <th>Телефон</th>
-                    <th>Номер стола</th>
-                    <th>Вместимость</th>
-                    <th>Дата бронирования</th>
-                    <th>Редактировать</th>
-                    <th>Удаление</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Имя пользователя</th>
+                <th>Телефон</th>
+                <th>Номер стола</th>
+                <th>Вместимость</th>
+                <th>Дата бронирования</th>
+                <th>Редактировать</th>
+                <th>Удаление</th>
+            </tr>
             </thead>
             <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    int i = startIndex;
-                    @foreach (var booking in Model)
-                    {
-                        <tr>
-                            <td>@i</td>
-                            <td>@booking.User.Name</td>
-                            <td>@booking.User.Phone</td>
-                            <td>@booking.Table.Name</td>
-                            <td>@booking.Table.Capacity</td>
-                            <td>
-                                <strong>С:</strong> @booking.StartTime.ToString("dd.MM.yyyy HH:mm")
-                                <br />
-                                <strong>По:</strong> @booking.EndTime.ToString("dd.MM.yyyy HH:mm")
-                            </td>
-
-                            <td>
-                                <a href="/TableBooking/Update/@booking.Id" class="btn btn-warning btn-sm">✏ Редактировать</a>
-                            </td>
-                            <td>
-                                <a href="/TableBooking/Delete/@booking.Id" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
-                            </td>
-                        </tr>
-                        i++;
-                    }
-                }
-                else
+            @if (Model.Bookings.Any())
+            {
+                int i = startIndex;
+                @foreach (var booking in Model.Bookings)
                 {
                     <tr>
-                        <td colspan="8" class="text-center">Нет данных</td>
+                        <td>@i++</td>
+                        <td>@booking.User.Name</td>
+                        <td>@booking.User.Phone</td>
+                        <td>@booking.Table.Name</td>
+                        <td>@booking.Table.Capacity</td>
+                        <td>
+                            <strong>С:</strong> @booking.StartTime.ToString("dd.MM.yyyy HH:mm")
+                            <br/>
+                            <strong>По:</strong> @booking.EndTime.ToString("dd.MM.yyyy HH:mm")
+                        </td>
+
+                        <td>
+                            <a href="/TableBooking/Update/@booking.Id" class="btn btn-warning btn-sm">✏
+                                Редактировать</a>
+                        </td>
+                        <td>
+                            <a href="/TableBooking/Delete/@booking.Id" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
+                        </td>
                     </tr>
-                }
+                }       
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center">Нет данных</td>
+                </tr>
+            }
 
             </tbody>
         </table>
@@ -101,15 +101,24 @@
 
     <!-- Пагинация -->
     <div class="text-center mt-3">
-        @if (pageNumber > 1)
+        @if (Model.PageNumber > 1)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber - 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary">← Назад</a>
+            <a href="@Url.Action("GetAll", new { pageNumber = Model.PageNumber - 1, pageSize = Model.PageSize, name = ViewBag.SearchQuery })"
+               class="btn btn-primary">← Назад</a>
         }
 
-        @if (Model?.Count() == pageSize)
+        @if (Model.Bookings.Count() == Model.PageSize)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = pageNumber + 1, pageSize = pageSize, name = ViewBag.SearchQuery })" class="btn btn-primary">Вперед →</a>
-        }
+            <a href="@Url.Action("GetAll", "TableBooking",
+                         new
+                         {
+                             pageNumber = Model.PageNumber + 1,
+                             pageSize = Model.PageSize),
+                            name = ViewBag.SearchQuery 
+                            }
+                        )"
+               class="btn btn-primary">Вперед →</a>
+            }
 
+        </div>
     </div>
-</div>

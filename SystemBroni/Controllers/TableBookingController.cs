@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SystemBroni.Models;
 using SystemBroni.Service;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Table = SystemBroni.Models.Table;
-using System.Reflection.Metadata;
+using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
+    [Route("TableBooking")]
+    [ApiController]
     public class TableBookingController : Controller
     {
         private readonly ITableBookingService _tableBookingService;
@@ -18,7 +17,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/TableBooking/Create")]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             ViewBag.Tables = _tableBookingService.GetAllTables();
@@ -27,7 +26,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpPost("/TableBooking/Create")]
+        [HttpPost("Create")]
         public async Task<IActionResult> Create(TableBooking booking, Table table, Guid userId)
         {
             await _tableBookingService.Create(booking, table, userId);
@@ -36,7 +35,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/TableBooking/GetAll")]
+        [HttpGet("GetAll")]
         public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
         {
             List<TableBooking> bookings;
@@ -64,14 +63,10 @@ namespace SystemBroni.Controllers
                 }
             }
 
-
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
-
-            return View(bookings);
+            return View(new GetAllViewModel() { PageNumber = pageNumber, PageSize = pageSize, Bookings = bookings});
         }
 
-        //[HttpGet("/TableBooking/GetByUserName")]
+        //[HttpGet("GetByUserName")]
         //public IActionResult GetByUserName(string name, int pageNumber = 1, int pageSize = 10)
         //{
         //    var bookings = _tableBookingService.GetBookingsByUserName(name, pageNumber, pageSize);
@@ -91,7 +86,7 @@ namespace SystemBroni.Controllers
         //}
 
 
-        [HttpGet("/TableBooking/Update/{id:Guid}")]
+        [HttpGet("Update/{id:Guid}")]
         public IActionResult Update(Guid id)
         {
             var booking = _tableBookingService.GetById(id);
@@ -103,7 +98,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpPost("/TableBooking/Update/{id:Guid}")]
+        [HttpPost("Update/{id:Guid}")]
         public IActionResult Update(TableBooking updatedBooking)
         {
             if (updatedBooking == null)
@@ -118,7 +113,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/TableBooking/Delete/{id:Guid}")]
+        [HttpGet("Delete/{id:Guid}")]
         public IActionResult Delete(Guid id)
         {
             _tableBookingService.Delete(id);
