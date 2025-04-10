@@ -2,10 +2,11 @@
 
 namespace SystemBroni.Controllers
 {
+    [Route("Admin")]
     public class AdminController : Controller
     {
-        [Route("/Admin/Panel")]
-        [HttpGet]
+        
+        [HttpGet("Panel")]
         public IActionResult Panel()
         {
             return View();

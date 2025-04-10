@@ -12,12 +12,14 @@ namespace SystemBroni.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        
+        private readonly ILogger<UserController> _logger;
+
         // Через ILogger подключить логгер, который будет записывать в файл. path = C://log.txt
-        public UserController(IUserService userService, ILogger logger)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
-            logger.Log(LogLevel.Information, "User controller created");
+            _logger = logger;
+            _logger.Log(LogLevel.Information, "User controller created");
         }
 
 
@@ -53,14 +55,6 @@ namespace SystemBroni.Controllers
             return View(users);
         }
 
-
-        //[HttpGet("/User/GetByName")]
-        //public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
-        //{
-        //    return RedirectToAction("GetAll", new { pageNumber, pageSize, name });
-        //}
-
-
         [HttpGet("Update/{id:Guid}")]
         public IActionResult Update(Guid id)
         {
@@ -75,9 +69,6 @@ namespace SystemBroni.Controllers
         [HttpPost("Update/{id:Guid}")]
         public IActionResult Update(Guid id, User updatedUser)
         {
-            if (updatedUser == null)
-                return BadRequest("Некорректные данные");
-
             var updated = _userService.UpdateUser(id, updatedUser);
 
             if (updated == null)

@@ -1,4 +1,4 @@
-﻿@model SystemBroni.Views.GetAllViewModel;
+﻿@model SystemBroni.Views.GetAllViewModelTableBooking;
 
 @{
     ViewData["Title"] = "Список бронирований";
@@ -12,27 +12,19 @@
     <div class="row mb-3">
         <div class="col-md-6 mx-auto">
             <form asp-action="GetAll" method="get" class="input-group">
-                <input type="text" name="name" class="form-control" value="@ViewBag.SearchQuery"
-                       placeholder="Введите имя пользователя" required/>
+                <input type="text" name="term" class="form-control" value="@Model.Term" placeholder="Введите имя пользователя" required/>
                 <button type="submit" class="btn btn-primary">🔍 Найти</button>
             </form>
         </div>
     </div>
 
-    <!-- Сообщение об ошибке -->
-    @if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <div class="alert alert-warning text-center">@ViewBag.Message</div>
-    }
 
     <!-- Кнопка назад к списку -->
-    @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
-    {
-        <div class="text-center mb-3">
-            <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = ViewBag.PageSize })"
-               class="btn btn-secondary">⬅ Назад к списку</a>
-        </div>
-    }
+    <div class="text-center mb-3">
+        <a href="@Url.Action("GetAll", new { pageNumber = 1, pageSize = Model.PageSize })"
+           class="btn btn-secondary">⬅ Назад к списку</a>
+    </div>
+
 
     <!-- Кнопка для возврата в панель админа -->
     <div class="mb-3">
@@ -60,13 +52,14 @@
             </tr>
             </thead>
             <tbody>
+            
             @if (Model.Bookings.Any())
             {
-                int i = startIndex;
+                var i = startIndex;
                 @foreach (var booking in Model.Bookings)
                 {
                     <tr>
-                        <td>@i++</td>
+                        <td>@i</td>
                         <td>@booking.User.Name</td>
                         <td>@booking.User.Phone</td>
                         <td>@booking.Table.Name</td>
@@ -86,6 +79,7 @@
                                onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
                         </td>
                     </tr>
+                    i++;
                 }
             }
             else
@@ -103,18 +97,23 @@
     <div class="text-center mt-3">
         @if (Model.PageNumber > 1)
         {
-            <a href="@Url.Action("GetAll", new { pageNumber = Model.PageNumber - 1, pageSize = Model.PageSize, name = ViewBag.SearchQuery })"
+            <a href="@Url.Action("GetAll", new
+            {
+                pageNumber = Model.PageNumber - 1,
+                pageSize = Model.PageSize,
+                term = Model.Term
+            })"
                class="btn btn-primary">← Назад</a>
         }
 
         @if (Model.Bookings.Count() == Model.PageSize)
         {
-            <a href="@Url.Action("GetAll", "TableBooking",
+            <a href="@Url.Action("GetAll",
                          new
                          {
                              pageNumber = Model.PageNumber + 1,
                              pageSize = Model.PageSize,
-                             name = ViewBag.SearchQuery
+                             term = Model.Term
                          }
                      )"
                class="btn btn-primary">Вперед →</a>

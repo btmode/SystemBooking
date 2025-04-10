@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SystemBroni.Models;
 using SystemBroni.Service;
+using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
-
     public class VipRoomController : Controller
     {
         private readonly IVipRoomService _vipRoomService;
@@ -13,7 +13,6 @@ namespace SystemBroni.Controllers
         {
             _vipRoomService = vipRoomService;
         }
-
 
 
         [Route("/VipRoom/Create")]
@@ -28,45 +27,25 @@ namespace SystemBroni.Controllers
         [HttpPost]
         public IActionResult Create(VipRoom vipRoom)
         {
-
             _vipRoomService.CreateVipRoom(vipRoom);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("/VipRoom/GetAll")]
-        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            List<VipRoom> vipRooms;
+            var vipRooms = _vipRoomService.GetVipRoomsByName(term, pageNumber, pageSize);
+       
 
-            if (!string.IsNullOrEmpty(name))
+
+            return View(new GetAllViewModelVipRoom()
             {
-                HttpContext.Session.SetString("SeacrhQuery", name);
-                vipRooms = _vipRoomService.GetVipRoomsByName(name, pageNumber, pageSize);
-                ViewBag.SearchQuery = name;
-            }
-            else
-            {
-                var sessionSearchQuery = HttpContext.Session.GetString("SeacrhQuery");
-
-                if (!string.IsNullOrEmpty(sessionSearchQuery))
-                {
-                    vipRooms = _vipRoomService.
-                        GetVipRoomsByName(sessionSearchQuery, pageNumber, pageSize);
-
-                    ViewBag.SearchQuery = sessionSearchQuery;
-
-                }
-                else
-                {
-                    vipRooms = _vipRoomService.GetVipRooms(pageNumber, pageSize);
-                }
-            }
-
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
-
-            return View(vipRooms);
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                VipRooms = vipRooms,
+                Term = term
+            });
         }
 
 
@@ -122,7 +101,5 @@ namespace SystemBroni.Controllers
             _vipRoomService.DeleteVipRoomById(id);
             return RedirectToAction("GetAll");
         }
-
-
     }
 }

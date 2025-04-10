@@ -21,6 +21,7 @@ namespace SystemBroni.Controllers
         {
             ViewBag.Tables = _tableBookingService.GetAllTables();
             ViewBag.Users = _tableBookingService.GetAllUsers();
+            
             return View();
         }
 
@@ -35,54 +36,22 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string term, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string term ="", int pageNumber = 1, int pageSize = 10)
         {
-            List<TableBooking> bookings;
+            var bookings = _tableBookingService.
+                GetBookingsByUserName(term, pageNumber, pageSize);
+            
 
-            if (!string.IsNullOrEmpty(term))
+            return View(new GetAllViewModelTableBooking()
             {
-                HttpContext.Session.SetString("SearchQuery", term);
-                bookings = _tableBookingService.GetBookingsByUserName(term, pageNumber, pageSize);
-
-                ViewBag.SearchQuery = term;
-            }
-            else
-            {
-                var sessionSearchQuery = HttpContext.Session.GetString("SearchQuery");
-
-                if (!string.IsNullOrEmpty(sessionSearchQuery))
-                {
-                    bookings = _tableBookingService.GetBookingsByUserName(sessionSearchQuery, pageNumber, pageSize);
-
-                    ViewBag.SearchQuery = sessionSearchQuery;
-                }
-                else
-                {
-                    bookings = _tableBookingService.GetAll(pageNumber, pageSize);
-                }
-            }
-
-            return View(new GetAllViewModel() { PageNumber = pageNumber, PageSize = pageSize, Bookings = bookings});
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Bookings = bookings,
+                Term = term
+            });
         }
 
-        //[HttpGet("GetByUserName")]
-        //public IActionResult GetByUserName(string name, int pageNumber = 1, int pageSize = 10)
-        //{
-        //    var bookings = _tableBookingService.GetBookingsByUserName(name, pageNumber, pageSize);
 
-        //    if (bookings == null || !bookings.Any())
-        //    {
-        //        ViewBag.Message = $"❌ Бронирование для {name} не найдено.";
-        //        ViewBag.SearchQuery = name;
-        //        return RedirectToAction("GetAll", new { pageNumber, pageSize });
-        //    }
-
-        //    ViewBag.SearchQuery = name;
-        //    ViewBag.PageNumber = pageNumber;
-        //    ViewBag.PageSize = pageSize;
-
-        //    return View("GetAll", bookings);
-        //}
 
 
         [HttpGet("Update/{id:Guid}")]
@@ -100,9 +69,6 @@ namespace SystemBroni.Controllers
         [HttpPost("Update/{id:Guid}")]
         public IActionResult Update(TableBooking updatedBooking)
         {
-            if (updatedBooking == null)
-                return BadRequest("Некорректные данные");
-
             var updated = _tableBookingService.UpdateBooking(updatedBooking);
 
             if (updated == null)

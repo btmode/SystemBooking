@@ -6,8 +6,7 @@ namespace SystemBroni.Service
     public interface ITableBookingService
     {
         public Task<TableBooking> Create(TableBooking booking, Table table, Guid? userId);
-        public List<TableBooking> GetAll(int pageNumber, int pageSize);
-        public List<TableBooking> GetBookingsByUserName(string name, int pageNumber, int pageSize);
+        public List<TableBooking> GetBookingsByUserName(string term, int pageNumber, int pageSize);
         public TableBooking? GetById(Guid id);
         public List<Table>? GetAllTables();
         public List<User>? GetAllUsers();
@@ -132,12 +131,12 @@ namespace SystemBroni.Service
         }
 
 
-        public List<TableBooking> GetBookingsByUserName(string name, int pageNumber, int pageSize)
+        public List<TableBooking> GetBookingsByUserName(string term, int pageNumber, int pageSize)
         {
             return _context.TableBookings
                 .Include(tb => tb.User)
                 .Include(tb => tb.Table)
-                .Where(tb => tb.User.Name.Contains(name))
+                .Where(n => n.User.Name.Contains(term))
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
