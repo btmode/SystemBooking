@@ -37,7 +37,7 @@ namespace SystemBroni.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tables");
+                    b.ToTable("Tables", (string)null);
                 });
 
             modelBuilder.Entity("SystemBroni.Models.TableBooking", b =>
@@ -64,7 +64,7 @@ namespace SystemBroni.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TableBookings");
+                    b.ToTable("TableBookings", (string)null);
                 });
 
             modelBuilder.Entity("SystemBroni.Models.User", b =>
@@ -93,7 +93,7 @@ namespace SystemBroni.Migrations
                     b.HasIndex("Phone")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SystemBroni.Models.VipRoom", b =>
@@ -111,7 +111,7 @@ namespace SystemBroni.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VipRooms");
+                    b.ToTable("VipRooms", (string)null);
                 });
 
             modelBuilder.Entity("SystemBroni.Models.VipRoomBooking", b =>
@@ -138,7 +138,7 @@ namespace SystemBroni.Migrations
 
                     b.HasIndex("VipRoomId");
 
-                    b.ToTable("VipRoomBookings");
+                    b.ToTable("VipRoomBookings", (string)null);
                 });
 
             modelBuilder.Entity("SystemBroni.Models.TableBooking", b =>

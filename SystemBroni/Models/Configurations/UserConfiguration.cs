@@ -8,12 +8,13 @@ namespace SystemBroni.Models.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            // делает Email уникальным
+            builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
             builder
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // делает Phone уникальным
             builder
                 .HasIndex(p => p.Phone)
                 .IsUnique();

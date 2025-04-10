@@ -22,32 +22,31 @@ namespace SystemBroni.Controllers
         public IActionResult Create()
         {
             ViewBag.Tables = _tableBookingService.GetAllTables();
-
+            ViewBag.Users = _tableBookingService.GetAllUsers();
             return View();
         }
 
 
         [HttpPost("/TableBooking/Create")]
-        public IActionResult Create(TableBooking booking, Table table, User user)
+        public async Task<IActionResult> Create(TableBooking booking, Table table, Guid userId)
         {
-            _tableBookingService.Create(booking, table, user);
+            await _tableBookingService.Create(booking, table, userId);
+
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("/TableBooking/GetAll")]
-        public IActionResult GetAll(string name,int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
         {
             List<TableBooking> bookings;
 
-           
             if (!string.IsNullOrEmpty(name))
             {
                 HttpContext.Session.SetString("SearchQuery", name);
-                bookings = _tableBookingService.
-                    GetBookingsByUserName(name,pageNumber, pageSize);
+                bookings = _tableBookingService.GetBookingsByUserName(name, pageNumber, pageSize);
 
-                ViewBag.SearchQuery = name;//
+                ViewBag.SearchQuery = name;
             }
             else
             {
@@ -55,8 +54,7 @@ namespace SystemBroni.Controllers
 
                 if (!string.IsNullOrEmpty(sessionSearchQuery))
                 {
-                    bookings = _tableBookingService.
-                        GetBookingsByUserName(sessionSearchQuery, pageNumber, pageSize);
+                    bookings = _tableBookingService.GetBookingsByUserName(sessionSearchQuery, pageNumber, pageSize);
 
                     ViewBag.SearchQuery = sessionSearchQuery;
                 }
@@ -65,7 +63,7 @@ namespace SystemBroni.Controllers
                     bookings = _tableBookingService.GetAll(pageNumber, pageSize);
                 }
             }
-                
+
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;

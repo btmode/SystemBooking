@@ -8,7 +8,6 @@ using SystemBroni.Service;
 
 namespace SystemBroni.Controllers
 {
-
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -35,31 +34,38 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("/User/GetAll")]
-        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string name, bool resetSearch = false, int pageNumber = 1, int pageSize = 10)
         {
             List<User> users;
 
-            if (!string.IsNullOrEmpty(name))
+            if (resetSearch)
+            {
+                HttpContext.Session.Remove("SearchQuery");
+                ViewBag.resetSearch = null;
+            }
+            else if (!string.IsNullOrEmpty(name))
             {
                 HttpContext.Session.SetString("SearchQuery", name);
-
-                users = _userService.GetUsersByName(name, pageNumber, pageSize);
                 ViewBag.SearchQuery = name;
             }
             else
             {
-                
                 var sessionSearchQuery = HttpContext.Session.GetString("SearchQuery");
 
                 if (!string.IsNullOrEmpty(sessionSearchQuery))
                 {
-                    users = _userService.GetUsersByName(sessionSearchQuery, pageNumber, pageSize);
+                    name = sessionSearchQuery;
                     ViewBag.SearchQuery = sessionSearchQuery;
                 }
-                else
-                {
-                    users = _userService.GetUsers(pageNumber, pageSize);
-                }
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                users = _userService.GetUsersByName(name, pageNumber, pageSize);
+            }
+            else
+            {
+                users = _userService.GetUsers(pageNumber, pageSize);
             }
 
             ViewBag.PageNumber = pageNumber;
@@ -108,7 +114,5 @@ namespace SystemBroni.Controllers
             _userService.DeleteUserById(id);
             return RedirectToAction("GetAll");
         }
-
-
     }
 }

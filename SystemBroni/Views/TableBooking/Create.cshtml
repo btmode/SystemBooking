@@ -22,6 +22,19 @@
         <input asp-for="User.Phone" type="text" class="form-control" required />
     </div>
 
+    <!-- Скрытое поле для userId -->
+    @if (Model?.User != null)
+    {
+        <input type="hidden" asp-for="User.Id" value="@Model.User.Id" />
+    }
+    else
+    {
+        <input type="hidden" id="userId" name="userId" value="" />
+    }
+
+
+    
+
     <div class="mb-3">
         <label>Стол</label>
         <select asp-for="Table.Id" class="form-control">
@@ -33,12 +46,12 @@
     </div>
 
     <div class="mb-3">
-        <label>Начало бронирования</label>
+        <label>Начало бронирования МСК</label>
         <input asp-for="StartTime" class="form-control" type="datetime-local" required />
     </div>
 
     <div class="mb-3">
-        <label>Окончание бронирования</label>
+        <label>Окончание бронирования МСК</label>
         <input asp-for="EndTime" class="form-control" type="datetime-local" required />
     </div>
 
@@ -46,3 +59,27 @@
     <button type="submit" class="btn btn-success">Создать</button>
     <a href="@Url.Action("GetAll", "TableBooking")" class="btn btn-secondary">Отмена</a>
 </form>
+
+@* <script> *@
+@*     const users = @Html.Raw(Json.Serialize(ViewBag.Users)); *@
+
+@*     const emailInput = document.getElementById('userEmail'); *@
+@*     const phoneInput = document.getElementById('userPhone'); *@
+@*     const userIdInput = document.getElementById('userId'); *@
+
+@*     function updateUserId() { *@
+@*         const email = emailInput.value.trim(); *@
+@*         const phone = phoneInput.value.trim(); *@
+
+@*         const matchingUser = users.find(u => u.email === email && u.phone === phone); *@
+
+@*         if (matchingUser) { *@
+@*             userIdInput.value = matchingUser.id; *@
+@*         } else { *@
+@*             userIdInput.value = ''; // Новый пользователь *@
+@*         } *@
+@*     } *@
+
+@*     emailInput.addEventListener('input', updateUserId); *@
+@*     phoneInput.addEventListener('input', updateUserId); *@
+@* </script> *@

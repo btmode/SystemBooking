@@ -10,7 +10,7 @@ namespace SystemBroni.Service
         public List<User> GetUsers(int pageNumber, int pageSize);
         public List<User> GetUsersByName(string name, int pageNumber, int pageSize);
         public User? GetUserById(Guid id);
-        public Task UpdateUser(Guid id, User updateUser);
+        public Task UpdateUser(Guid id, User updateUser);     
         public Task DeleteUserById(Guid id);
 
     }
@@ -24,7 +24,7 @@ namespace SystemBroni.Service
             _context = context;
         }
 
-        // это я переделал под Async
+ 
         public async Task<User> CreateUser(User user)
         {
             await _context.Users.AddAsync(user);
@@ -32,7 +32,7 @@ namespace SystemBroni.Service
             return user;
         }
 
-        //здесь не нужно делать Async
+   
         public List<User> GetUsers(int pageNumber, int pageSize)
         {
             
@@ -44,7 +44,7 @@ namespace SystemBroni.Service
 
         }
 
-        //здесь не нужно делать Async
+ 
         public List<User> GetUsersByName(string name, int pageNumber, int pageSize)
         {
             return _context.Users
@@ -55,13 +55,13 @@ namespace SystemBroni.Service
                 .ToList();
         }
 
-        //здесь не нужно делать Async
+    
         public User? GetUserById(Guid id)
         {
             return _context.Users.Find(id);
         }
 
-        //здесь нужен async только для SaveChangesAsync
+        
         public async Task UpdateUser(Guid id, User updatedUser)
         {
             var user = _context.Users.Find(id);
@@ -74,7 +74,7 @@ namespace SystemBroni.Service
             await _context.SaveChangesAsync();
         }
 
-        //здесь нужен async только для SaveChangesAsync
+      
         public async Task DeleteUserById(Guid id)
         {
             var user =  _context.Users.Find(id);
@@ -86,5 +86,8 @@ namespace SystemBroni.Service
 
             await _context.SaveChangesAsync();
         }
+
+      
+
     }
 }
