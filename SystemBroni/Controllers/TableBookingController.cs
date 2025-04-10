@@ -36,16 +36,16 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string name, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string term, int pageNumber = 1, int pageSize = 10)
         {
             List<TableBooking> bookings;
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(term))
             {
-                HttpContext.Session.SetString("SearchQuery", name);
-                bookings = _tableBookingService.GetBookingsByUserName(name, pageNumber, pageSize);
+                HttpContext.Session.SetString("SearchQuery", term);
+                bookings = _tableBookingService.GetBookingsByUserName(term, pageNumber, pageSize);
 
-                ViewBag.SearchQuery = name;
+                ViewBag.SearchQuery = term;
             }
             else
             {

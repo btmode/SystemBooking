@@ -86,7 +86,7 @@
                                onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
                         </td>
                     </tr>
-                }       
+                }
             }
             else
             {
@@ -113,12 +113,12 @@
                          new
                          {
                              pageNumber = Model.PageNumber + 1,
-                             pageSize = Model.PageSize),
-                            name = ViewBag.SearchQuery 
-                            }
-                        )"
+                             pageSize = Model.PageSize,
+                             name = ViewBag.SearchQuery
+                         }
+                     )"
                class="btn btn-primary">Вперед →</a>
-            }
+        }
 
-        </div>
     </div>
+</div>
