@@ -64,29 +64,20 @@ namespace SystemBroni.Service
         
         public async Task UpdateTable(Guid id, Table updateTable)
         {
-            var table = _context.Tables.Find(id);
-
-            if (table == null)
-                throw new Exception("");
-
-            table.Name = updateTable.Name;
-            table.Capacity = updateTable.Capacity;
-
-            await _context.SaveChangesAsync();
+            await _context.Tables
+                .Where(a => a.Id == id)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(a => a.Name, updateTable.Name)
+                    .SetProperty(a => a.Capacity, updateTable.Capacity));
+           
         }
 
         
         public async Task DeleteTableById(Guid id)
         {
-            var table = _context.Tables.Find(id);
-
-            if (table == null)
-                throw new Exception("");
-
-            _context.Tables.Remove(table);
-
-            await _context.SaveChangesAsync();
-
+            await _context.Users
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
         }
     }
 }

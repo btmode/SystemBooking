@@ -9,7 +9,7 @@ using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
-     [Route("User")]
+    [Route("User")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -46,11 +46,10 @@ namespace SystemBroni.Controllers
 
             var users = _userService.GetUsersByName(term, pageNumber, pageSize);
 
-            
 
             return View(new GetAllViewModelUser()
             {
-                PageNumber = pageNumber, 
+                PageNumber = pageNumber,
                 PageSize = pageSize,
                 Users = users,
                 Term = term
@@ -69,21 +68,17 @@ namespace SystemBroni.Controllers
 
 
         [HttpPost("Update/{id:Guid}")]
-        public IActionResult Update(Guid id, User updatedUser)
+        public async Task<IActionResult> Update(Guid id, User updatedUser)
         {
-            var updated = _userService.UpdateUser(id, updatedUser);
-
-            if (updated == null)
-                return NotFound("Пользователь не найден");
-
+            await _userService.Update(id, updatedUser);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("Delete/{id:Guid}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult>  Delete(Guid id)
         {
-            _userService.DeleteUserById(id);
+            await _userService.Delete(id);
             return RedirectToAction("GetAll");
         }
     }

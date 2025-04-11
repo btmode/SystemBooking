@@ -34,25 +34,24 @@ namespace SystemBroni.Controllers
             return RedirectToAction("GetAll");
         }
 
-        
+
         [HttpGet("GetAll")]
         public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-                
-                var tables= _tableService
-                    .GetTablesByName(term, pageNumber, pageSize);
-            
+            var tables = _tableService
+                .GetTablesByName(term, pageNumber, pageSize);
+
 
             return View(new GetAllViewModelTable()
             {
-                PageNumber = pageNumber, 
+                PageNumber = pageNumber,
                 PageSize = pageSize,
                 Tables = tables,
                 Term = term
             });
         }
-       
-        
+
+
         [HttpGet("Update/{id:Guid}")]
         public IActionResult Update(Guid id)
         {
@@ -63,23 +62,19 @@ namespace SystemBroni.Controllers
             return View(table);
         }
 
-        
+
         [HttpPost("Update/{id:Guid}")]
-        public IActionResult Update(Guid id, Table updatedTable)
+        public async Task<IActionResult> Update(Guid id, Table updatedTable)
         {
-            var updated = _tableService.UpdateTable(id, updatedTable);
-
-            if (updated == null)
-                return NotFound("Стол не найден");
-
+            await _tableService.UpdateTable(id, updatedTable);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("Delete/{id:Guid}")]
-        public IActionResult DeleteUser(Guid id)
+        public async Task<IActionResult>  DeleteUser(Guid id)
         {
-            _tableService.DeleteTableById(id);
+            await _tableService.DeleteTableById(id);
             return RedirectToAction("GetAll");
         }
     }

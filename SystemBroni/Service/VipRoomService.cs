@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SystemBroni.Models;
 
 namespace SystemBroni.Service
@@ -63,26 +64,19 @@ namespace SystemBroni.Service
         // здесь Async нужен только для SaveChangesAsync
         public async Task UpdateVipRoom(Guid id, VipRoom updateVipRoom)
         {
-            var vipRoom = _context.VipRooms.Find(id);
-            if (vipRoom == null)
-                throw new Exception("");
-
-            vipRoom.Name = updateVipRoom.Name;
-            vipRoom.Capacity = updateVipRoom.Capacity;
-
-            await _context.SaveChangesAsync();
+            await _context.VipRooms
+                .Where(a => a.Id == id)
+                .ExecuteUpdateAsync(a => a
+                    .SetProperty(n => n.Name, updateVipRoom.Name)
+                    .SetProperty(n => n.Capacity, updateVipRoom.Capacity));
         }
 
         // здесь Async нужен только для SaveChangesAsync
         public async Task DeleteVipRoomById(Guid id)
         {
-            var vipRoom = _context.VipRooms.Find(id);
-            if (vipRoom == null)
-                throw new Exception("");
-
-            _context.VipRooms.Remove(vipRoom);
-
-            await _context.SaveChangesAsync();
+            await _context.VipRooms
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
         }
     }
 }

@@ -36,7 +36,6 @@ namespace SystemBroni.Controllers
         public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
             var vipRooms = _vipRoomService.GetVipRoomsByName(term, pageNumber, pageSize);
-       
 
 
             return View(new GetAllViewModelVipRoom()
@@ -47,23 +46,6 @@ namespace SystemBroni.Controllers
                 Term = term
             });
         }
-
-
-        //[HttpGet("/VipRoom/GetByName")]
-        //public IActionResult GetByName(string name, int pageNumber = 1, int pageSize = 10)
-        //{
-        //    var vipRooms = _vipRoomService.GetVipRoomsByName(name, pageNumber, pageSize);
-        //    if (!vipRooms.Any())
-        //    {
-        //        ViewBag.Message = $"❌ VIP-комната с номером ({name}) не найдена.";
-        //        return RedirectToAction("GetAll", new { pageNumber, pageSize });
-        //    }
-
-        //    ViewBag.PageNumber = pageNumber;
-        //    ViewBag.PageSize = pageSize;
-
-        //    return View("GetAll", vipRooms);
-        //}
 
 
         [HttpGet("/VipRoom/Update/{id:Guid}")]
@@ -80,25 +62,17 @@ namespace SystemBroni.Controllers
 
 
         [HttpPost("/VipRoom/Update/{id:Guid}")]
-        public IActionResult Update(Guid id, VipRoom updatedVipRoom)
+        public async Task<IActionResult> Update(Guid id, VipRoom updatedVipRoom)
         {
-            if (updatedVipRoom == null)
-                return BadRequest("Некорректные данные");
-
-            var updated = _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
-
-            if (updated == null)
-                return NotFound("Пользователь с таким {id} не найден");
-
-
+            await _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("/VipRoom/Delete/{id:Guid}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _vipRoomService.DeleteVipRoomById(id);
+            await _vipRoomService.DeleteVipRoomById(id);
             return RedirectToAction("GetAll");
         }
     }

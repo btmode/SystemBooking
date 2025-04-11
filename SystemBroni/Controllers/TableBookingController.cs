@@ -21,7 +21,7 @@ namespace SystemBroni.Controllers
         {
             ViewBag.Tables = _tableBookingService.GetAllTables();
             ViewBag.Users = _tableBookingService.GetAllUsers();
-            
+
             return View();
         }
 
@@ -36,11 +36,10 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string term ="", int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            var bookings = _tableBookingService.
-                GetBookingsByUserName(term, pageNumber, pageSize);
-            
+            var bookings = _tableBookingService.GetBookingsByUserName(term, pageNumber, pageSize);
+
 
             return View(new GetAllViewModelTableBooking()
             {
@@ -50,8 +49,6 @@ namespace SystemBroni.Controllers
                 Term = term
             });
         }
-
-
 
 
         [HttpGet("Update/{id:Guid}")]
@@ -67,21 +64,17 @@ namespace SystemBroni.Controllers
 
 
         [HttpPost("Update/{id:Guid}")]
-        public IActionResult Update(TableBooking updatedBooking)
+        public async Task<IActionResult> Update(TableBooking updatedBooking)
         {
-            var updated = _tableBookingService.UpdateBooking(updatedBooking);
-
-            if (updated == null)
-                NotFound("не найден");
-
+            await _tableBookingService.Update(updatedBooking);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("Delete/{id:Guid}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _tableBookingService.Delete(id);
+            await _tableBookingService.Delete(id);
             return RedirectToAction("GetAll");
         }
     }

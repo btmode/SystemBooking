@@ -9,8 +9,8 @@ namespace SystemBroni.Service
         public Task<User> CreateUser(User user);
         public List<User> GetUsersByName(string name, int pageNumber, int pageSize);
         public User? GetUserById(Guid id);
-        public Task UpdateUser(Guid id, User updateUser);
-        public Task DeleteUserById(Guid id);
+        public Task Update(Guid id, User updateUser);
+        public Task Delete(Guid id);
     }
 
     public class UserService : IUserService
@@ -46,29 +46,20 @@ namespace SystemBroni.Service
         }
 
 
-        public async Task UpdateUser(Guid id, User updatedUser)
+        public async Task Update(Guid id, User updatedUser)
         {
-            var user = _context.Users.Find(id);
-            if (user == null)
-                throw new Exception("");
-
-            user.Name = updatedUser.Name;
-            user.Phone = updatedUser.Phone;
-
-            await _context.SaveChangesAsync();
+            await _context.Users
+                .Where(a => a.Id == id)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(u => u.Name, updatedUser.Name)
+                    .SetProperty(u => u.Phone, updatedUser.Phone));
         }
 
-
-        public async Task DeleteUserById(Guid id)
+        public async Task Delete(Guid id)
         {
-            var user = _context.Users.Find(id);
-
-            if (user == null)
-                throw new Exception("");
-
-            _context.Users.Remove(user);
-
-            await _context.SaveChangesAsync();
+            await _context.Users
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
         }
     }
 }

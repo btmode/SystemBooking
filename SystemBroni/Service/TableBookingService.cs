@@ -10,7 +10,7 @@ namespace SystemBroni.Service
         public TableBooking? GetById(Guid id);
         public List<Table>? GetAllTables();
         public List<User>? GetAllUsers();
-        public Task UpdateBooking(TableBooking updateBooking);
+        public Task Update(TableBooking updateBooking);
         public Task Delete(Guid id);
     }
 
@@ -150,39 +150,25 @@ namespace SystemBroni.Service
                 .FirstOrDefault(tb => tb.Id == id);
         }
 
-        public async Task UpdateBooking(TableBooking updateBooking)
+        public async Task Update(TableBooking updateBooking)
         {
-            var booking = _context.TableBookings
+            await _context.TableBookings
                 .Include(b => b.User)
                 .Include(b => b.Table)
-                .FirstOrDefault(b => b.Id == updateBooking.Id);
-
-            if (booking == null)
-                throw new Exception("Бронирование не найдено!");
-
-
-            if (booking.Table != null && updateBooking.Table != null && booking.Table.Id != updateBooking.Table.Id)
-            {
-                var newTable = _context.Tables.Find(updateBooking.Table.Id);
-                if (newTable != null)
-                {
-                    booking.Table = newTable;
-                }
-            }
-
-            await _context.SaveChangesAsync();
+                .Where(b => b.Id == updateBooking.Id)
+                .ExecuteUpdateAsync(a => a
+                    .SetProperty(b => b.StartTime, updateBooking.StartTime)
+                    .SetProperty(b => b.EndTime, updateBooking.EndTime)
+                    .SetProperty(b => b.User, updateBooking.User)
+                    .SetProperty(b => b.Table, updateBooking.Table));
         }
 
 
         public async Task Delete(Guid id)
         {
-            var booking = _context.TableBookings.Find(id);
-
-            if (booking == null)
-                throw new Exception("");
-
-            _context.TableBookings.Remove(booking);
-            await _context.SaveChangesAsync();
+            await _context.TableBookings
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
         }
     }
 }
