@@ -6,9 +6,9 @@ namespace SystemBroni.Service
 {
     public interface IUserService
     {
-        public Task<User> CreateUser(User user);
-        public List<User> GetUsersByName(string name, int pageNumber, int pageSize);
-        public User? GetUserById(Guid id);
+        public Task<User> Create(User user);
+        public Task<List<User?>> GetAllUsersOrByName(string name, int pageNumber, int pageSize);
+        public Task<User?> GetUserById(Guid id);
         public Task Update(Guid id, User updateUser);
         public Task Delete(Guid id);
     }
@@ -23,26 +23,28 @@ namespace SystemBroni.Service
         }
 
 
-        public async Task<User> CreateUser(User user)
+        public async Task<User> Create(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
         }
 
-        public List<User> GetUsersByName(string name, int pageNumber, int pageSize)
+        public async Task<List<User?>> GetAllUsersOrByName(string name, int pageNumber, int pageSize)
         {
-            return _context.Users
+            return await _context.Users
                 .Where(u => u.Name.Contains(name))
                 .OrderBy(u => u.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
         }
 
-        public User? GetUserById(Guid id)
+        public async Task<User?> GetUserById(Guid id)
         {
-            return _context.Users.Find(id);
+            return  await _context.Users
+                .AsNoTracking()
+                .FirstAsync(a=>a.Id == id);
         }
 
 

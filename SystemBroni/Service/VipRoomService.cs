@@ -6,10 +6,9 @@ namespace SystemBroni.Service
 {
     public interface IVipRoomService
     {
-        public Task<VipRoom> CreateVipRoom(VipRoom vipRoom);
-        public List<VipRoom> GetVipRooms(int pageNumber, int pageSize);
-        public List<VipRoom> GetVipRoomsByName(string name, int pageNumber, int pageSize);
-        public VipRoom? GetVipRoomById(Guid id);
+        public Task<VipRoom> Create(VipRoom vipRoom);
+        public Task<List<VipRoom>>  GetVipRoomsOrByName(string term, int pageNumber, int pageSize);
+        public Task<VipRoom?> GetVipRoomById(Guid id);
         public Task UpdateVipRoom(Guid id, VipRoom updateVipRoom);
         public Task DeleteVipRoomById(Guid id);
     }
@@ -24,8 +23,8 @@ namespace SystemBroni.Service
             _context = context;
         }
 
-        // здесь я переделал под Async
-        public async Task<VipRoom> CreateVipRoom(VipRoom vipRoom)
+
+        public async Task<VipRoom> Create(VipRoom vipRoom)
         {
             await _context.VipRooms.AddAsync(vipRoom);
 
@@ -34,34 +33,25 @@ namespace SystemBroni.Service
         }
 
 
-        // здесь Async не нужен
-        public List<VipRoom> GetVipRooms(int pageNumber, int pageSize)
+
+
+        public async Task<List<VipRoom>> GetVipRoomsOrByName(string term, int pageNumber, int pageSize)
         {
-            return _context.VipRooms
+            return await _context.VipRooms
+                .Where(v => v.Name.Contains(term))
                 .OrderBy(v => v.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
         }
 
-        // здесь Async не нужен
-        public List<VipRoom> GetVipRoomsByName(string name, int pageNumber, int pageSize)
+
+        public async Task<VipRoom?> GetVipRoomById(Guid id)
         {
-            return _context.VipRooms
-                .Where(v => v.Name.Contains(name))
-                .OrderBy(v => v.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            return await _context.VipRooms.FindAsync(id);
         }
 
-        // здесь Async не нужен
-        public VipRoom? GetVipRoomById(Guid id)
-        {
-            return _context.VipRooms.Find(id);
-        }
 
-        // здесь Async нужен только для SaveChangesAsync
         public async Task UpdateVipRoom(Guid id, VipRoom updateVipRoom)
         {
             await _context.VipRooms
@@ -71,7 +61,7 @@ namespace SystemBroni.Service
                     .SetProperty(n => n.Capacity, updateVipRoom.Capacity));
         }
 
-        // здесь Async нужен только для SaveChangesAsync
+
         public async Task DeleteVipRoomById(Guid id)
         {
             await _context.VipRooms

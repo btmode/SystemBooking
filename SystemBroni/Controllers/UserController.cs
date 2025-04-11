@@ -20,7 +20,7 @@ namespace SystemBroni.Controllers
         {
             _userService = userService;
             _logger = logger;
-            _logger.Log(LogLevel.Information, "User controller created");
+            _logger.LogInformation("User controller created");
         }
 
 
@@ -32,20 +32,20 @@ namespace SystemBroni.Controllers
 
 
         [HttpPost("Create")]
-        public IActionResult Create(User user)
+        public async Task<IActionResult> Create(User user)
         {
-            _userService.CreateUser(user);
+            await _userService.Create(user);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
             // logger.log(LogLevel.Information, "Начался поиск всех пользователей");
 
-            var users = _userService.GetUsersByName(term, pageNumber, pageSize);
-
+            var users = await _userService
+                .GetAllUsersOrByName(term, pageNumber, pageSize);
 
             return View(new GetAllViewModelUser()
             {
@@ -56,13 +56,11 @@ namespace SystemBroni.Controllers
             });
         }
 
+        
         [HttpGet("Update/{id:Guid}")]
-        public IActionResult Update(Guid id)
+        public async Task<IActionResult> Update(Guid id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
-                return NotFound("Пользователь не найден");
-
+            var user = await _userService.GetUserById(id);
             return View(user);
         }
 
@@ -76,7 +74,7 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("Delete/{id:Guid}")]
-        public async Task<IActionResult>  Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             await _userService.Delete(id);
             return RedirectToAction("GetAll");

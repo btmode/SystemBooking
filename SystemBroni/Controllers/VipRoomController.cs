@@ -5,6 +5,7 @@ using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
+    [Route("VipRoom")]
     public class VipRoomController : Controller
     {
         private readonly IVipRoomService _vipRoomService;
@@ -15,7 +16,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [Route("/VipRoom/Create")]
+        [Route("Create")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -23,20 +24,19 @@ namespace SystemBroni.Controllers
         }
 
 
-        [Route("/VipRoom/Create")]
+        [Route("Create")]
         [HttpPost]
-        public IActionResult Create(VipRoom vipRoom)
+        public async Task<IActionResult> Create(VipRoom vipRoom)
         {
-            _vipRoomService.CreateVipRoom(vipRoom);
+            await _vipRoomService.Create(vipRoom);
             return RedirectToAction("GetAll");
         }
 
 
-        [HttpGet("/VipRoom/GetAll")]
-        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            var vipRooms = _vipRoomService.GetVipRoomsByName(term, pageNumber, pageSize);
-
+            var vipRooms = await _vipRoomService.GetVipRoomsOrByName(term, pageNumber, pageSize);
 
             return View(new GetAllViewModelVipRoom()
             {
@@ -48,20 +48,19 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/VipRoom/Update/{id:Guid}")]
-        public IActionResult Update(Guid id)
+        [HttpGet("Update/{id:Guid}")]
+        public async Task<IActionResult> Update(Guid id)
         {
-            var vipRoom = _vipRoomService.GetVipRoomById(id);
+            var vipRoom = await _vipRoomService.GetVipRoomById(id);
 
-            if (vipRoom == null)
-                return NotFound("Vip комната не найдена");
-
+            if (vipRoom is null)
+                return NotFound($"По данному Id: ({id}) нет данных");
 
             return View(vipRoom);
         }
 
 
-        [HttpPost("/VipRoom/Update/{id:Guid}")]
+        [HttpPost("Update/{id:Guid}")]
         public async Task<IActionResult> Update(Guid id, VipRoom updatedVipRoom)
         {
             await _vipRoomService.UpdateVipRoom(id, updatedVipRoom);
@@ -69,7 +68,7 @@ namespace SystemBroni.Controllers
         }
 
 
-        [HttpGet("/VipRoom/Delete/{id:Guid}")]
+        [HttpGet("Delete/{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _vipRoomService.DeleteVipRoomById(id);

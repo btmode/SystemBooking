@@ -18,28 +18,26 @@ namespace SystemBroni.Controllers
         }
 
 
-        [Route("Create")]
-        [HttpGet]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             return View();
         }
 
 
-        [Route("Create")]
-        [HttpPost]
-        public IActionResult Create(Table table)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(Table table)
         {
-            _tableService.CreateTable(table);
+            await _tableService.Create(table);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            var tables = _tableService
-                .GetTablesByName(term, pageNumber, pageSize);
+            var tables =await _tableService
+                .GetAllTableOrByName(term, pageNumber, pageSize);
 
 
             return View(new GetAllViewModelTable()
@@ -53,12 +51,13 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("Update/{id:Guid}")]
-        public IActionResult Update(Guid id)
+        public async Task<IActionResult> Update(Guid id)
         {
-            var table = _tableService.GetById(id);
-            if (table == null)
-                return NotFound("Стол не найден");
-
+            var table = await _tableService.GetById(id);
+            
+            if (table is null)
+                return NotFound($"По данному Id: ({id}) нет данных"); 
+            
             return View(table);
         }
 
@@ -66,15 +65,15 @@ namespace SystemBroni.Controllers
         [HttpPost("Update/{id:Guid}")]
         public async Task<IActionResult> Update(Guid id, Table updatedTable)
         {
-            await _tableService.UpdateTable(id, updatedTable);
+            await _tableService.Update(id, updatedTable);
             return RedirectToAction("GetAll");
         }
 
 
         [HttpGet("Delete/{id:Guid}")]
-        public async Task<IActionResult>  DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            await _tableService.DeleteTableById(id);
+            await _tableService.Delete(id);
             return RedirectToAction("GetAll");
         }
     }

@@ -8,11 +8,11 @@ namespace SystemBroni.Service
 {
     public interface ITableService
     {
-        public Task<Table> CreateTable(Table table);
-        public List<Table> GetTablesByName(string term, int pageNumber, int pageSize);
-        public Table? GetById(Guid id);
-        public Task UpdateTable(Guid id, Table updateTable);
-        public Task DeleteTableById(Guid id);
+        public Task<Table> Create(Table table);
+        public Task<List<Table>>  GetAllTableOrByName(string term, int pageNumber, int pageSize);
+        public Task<Table?> GetById(Guid id);
+        public Task Update(Guid id, Table updateTable);
+        public Task Delete(Guid id);
     }
 
     public class TableService : ITableService
@@ -25,44 +25,34 @@ namespace SystemBroni.Service
         }
 
 
-        // это я переделал под Async
-        public async Task<Table> CreateTable(Table table)
+        public async Task<Table> Create(Table table)
         {
             await _context.Tables.AddAsync(table);
-
+            
             await _context.SaveChangesAsync();
             return table;
         }
-
-        // здесь не нужен Async
-        public List<Table> GetTables(int pageNumber, int pageSize)
-        {
-            return _context.Tables.OrderBy(u => u.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-        }
-
-       
-        public List<Table> GetTablesByName(string term, int pageNumber, int pageSize)
+      
+        
+        public async Task<List<Table>> GetAllTableOrByName(string term, int pageNumber, int pageSize)
         {
 
-            return _context.Tables
+            return await _context.Tables
                .Where(t => t.Name.Contains(term))
                .OrderBy(t => t.Id)
                .Skip((pageNumber - 1) * pageSize)
                .Take(pageSize)
-               .ToList();
+               .ToListAsync();
         }
 
        
-        public Table? GetById(Guid id)
+        public async Task<Table?> GetById(Guid id)
         {
-            return _context.Tables.Find(id);
+            return await _context.Tables.FindAsync(id);
         }
 
         
-        public async Task UpdateTable(Guid id, Table updateTable)
+        public async Task Update(Guid id, Table updateTable)
         {
             await _context.Tables
                 .Where(a => a.Id == id)
@@ -73,7 +63,7 @@ namespace SystemBroni.Service
         }
 
         
-        public async Task DeleteTableById(Guid id)
+        public async Task Delete(Guid id)
         {
             await _context.Users
                 .Where(a => a.Id == id)
