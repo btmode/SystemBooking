@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SystemBroni.Models;
 using SystemBroni.Service;
+using SystemBroni.Views;
 
 namespace SystemBroni.Controllers
 {
@@ -14,74 +15,67 @@ namespace SystemBroni.Controllers
             _vipRoomBookingService = vipRoomBookingService;
         }
 
+        [HttpGet("Create")]
+        public IActionResult Create()
+        {
+            ViewBag.VipRooms = _vipRoomBookingService.GetAllVipRooms();
+            ViewBag.Users = _vipRoomBookingService.GetAllUsers();
 
-        // [HttpPost("Create")]
-        // public ActionResult<VipRoomBooking> CreateVipRoomBooking( VipRoomBooking booking)
-        // {
-        //     if (booking == null)
-        //     {
-        //         return BadRequest("Данные были не корректно введены");
-        //     }
-        //
-        //     var createdBooking = _vipRoomBookingService.CreateBooking(booking);
-        //
-        //     return CreatedAtAction(nameof(GetByIdVipRoomBooking), new { id = createdBooking.Id }, createdBooking);
-        // }
+            return View();
+        }
 
 
-          
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(VipRoomBooking booking, VipRoom vipRoom, Guid userId)
+        {
+            await _vipRoomBookingService.Create(booking, vipRoom, userId);
+
+            return RedirectToAction("GetAll");
+        }
+
+
         [HttpGet("GetAll")]
-        public ActionResult<IEnumerable<VipRoomBooking>> GetAllVipRoomBooking()
+        public async Task<IActionResult> GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            return Ok(_vipRoomBookingService.GetAllBooking());
+            var bookings = await _vipRoomBookingService.GetAllBookingsOrByUserName(term, pageNumber, pageSize);
+
+
+            return View(new GetAllViewModelVipRoomBooking()
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Bookings = bookings,
+                Term = term
+            });
         }
 
 
+        [HttpGet("Update/{id:Guid}")]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var booking = await _vipRoomBookingService.GetById(id);
+
+            if (booking is null)
+                return NotFound("Бронирование не найдено");
+
+            return View(booking);
+        }
+
+
+        [HttpPost("Update/{id:Guid}")]
+        public async Task<IActionResult> Update(VipRoomBooking updatedBooking)
+        {
+            await _vipRoomBookingService.Update(updatedBooking);
+            return RedirectToAction("GetAll");
+        }
+
+
+        [HttpGet("Delete/{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _vipRoomBookingService.Delete(id);
+            return RedirectToAction("GetAll");
+        }
         
-        // [HttpGet("get/{id:Guid}")]
-        // public ActionResult<VipRoomBooking> GetByIdVipRoomBooking(Guid id)
-        // {
-        //     var booking = _vipRoomBookingService.GetByIdBooking(id);
-        //
-        //     if (booking == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //
-        //     return Ok(booking);
-        // }
-
-
-        [HttpPatch("Update/{id:Guid}")]
-        public IActionResult UpdateVipRoomBooking(Guid id, VipRoomBooking updateBooking)
-        {
-            if (updateBooking == null)
-            {
-                return BadRequest("Invalid data.");
-            }
-
-            var updated = _vipRoomBookingService.UpdateBooking(id, updateBooking);
-
-            if (updated == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-
-        [HttpDelete("Delete/{id:Guid}")]
-        public IActionResult DeleteVipRoomBooking(Guid id)
-        {
-            var deleted = _vipRoomBookingService.DeleteBooking(id);
-
-            if (deleted == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
     }
 }

@@ -1,8 +1,8 @@
-﻿@model SystemBroni.Models.TableBooking
+﻿@model SystemBroni.Models.VipRoomBooking
 
-<h2>Редактировать бронирование</h2>
+<h2>Редактировать бронирование VIP-комнаты</h2>
 
-<form method="post" action="@Url.Action("Update", "TableBooking", new { id = Model.Id })">
+<form method="post" action="@Url.Action("Update", "VipRoomBooking", new { id = Model.Id })">
     <div>
         <label>Имя пользователя</label>
         <input type="text" name="User.Name" value="@Model.User.Name" required />
@@ -12,12 +12,13 @@
         <input type="text" name="User.Phone" value="@Model.User.Phone" required />
     </div>
     <div>
-        <label>Стол</label>
-        <select name="Table.Id">
-            @foreach (var table in ViewBag.Tables)
+        <label>VIP-комната</label>
+        <select name="vipRoomId" required>
+            @foreach (var vipRoom in ViewBag.VipRooms)
             {
-                <option value="@table.Id" selected="@(table.Id == Model.Table.Id ? "selected" : null)">
-                    @table.Name (Вместимость: @table.Capacity)
+                <option value="@vipRoom.Id"
+                        selected="@(vipRoom.Id == Model.VipRoom.Id ? "selected" : null)">
+                    @vipRoom.Name (Вместимость: @vipRoom.Capacity)
                 </option>
             }
         </select>
@@ -35,5 +36,5 @@
 
     <br />
     <button type="submit" class="btn btn-warning">Сохранить</button>
-    <a href="@Url.Action("GetAll", "TableBooking")" class="btn btn-secondary">Отмена</a>
+    <a href="@Url.Action("GetAll", "VipRoomBooking")" class="btn btn-secondary">Отмена</a>
 </form>

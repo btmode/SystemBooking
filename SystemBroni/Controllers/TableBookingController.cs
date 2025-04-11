@@ -36,9 +36,9 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(string term = "", int pageNumber = 1, int pageSize = 10)
         {
-            var bookings = _tableBookingService.GetBookingsByUserName(term, pageNumber, pageSize);
+            var bookings = await _tableBookingService.GetAllBookingsOrByUserName(term, pageNumber, pageSize);
 
 
             return View(new GetAllViewModelTableBooking()
@@ -52,11 +52,11 @@ namespace SystemBroni.Controllers
 
 
         [HttpGet("Update/{id:Guid}")]
-        public IActionResult Update(Guid id)
+        public async Task<IActionResult> Update(Guid id)
         {
-            var booking = _tableBookingService.GetById(id);
+            var booking = await _tableBookingService.GetById(id);
 
-            if (booking == null)
+            if (booking is null)
                 return NotFound("Бронирование не найдено");
 
             return View(booking);

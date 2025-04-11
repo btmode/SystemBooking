@@ -1,4 +1,4 @@
-﻿@model SystemBroni.Views.GetAllViewModelTableBooking;
+﻿@model SystemBroni.Views.GetAllViewModelVipRoomBooking;
 
 @{
     ViewData["Title"] = "Список бронирований";
@@ -33,7 +33,7 @@
 
     <!-- Кнопка добавления бронирования -->
     <div class="mb-3">
-        <a href="/TableBooking/Create" class="btn btn-success">➕ Создать бронирование</a>
+        <a href="/VipRoomBooking/Create" class="btn btn-success">➕ Создать бронирование</a>
     </div>
 
     <!-- Таблица бронирований -->
@@ -44,7 +44,7 @@
                 <th>#</th>
                 <th>Имя пользователя</th>
                 <th>Телефон</th>
-                <th>Номер стола</th>
+                <th>Название Vip-комнаты</th>
                 <th>Вместимость</th>
                 <th>Дата бронирования</th>
                 <th>Редактировать</th>
@@ -62,8 +62,8 @@
                         <td>@i</td>
                         <td>@booking.User.Name</td>
                         <td>@booking.User.Phone</td>
-                        <td>@booking.Table.Name</td>
-                        <td>@booking.Table.Capacity</td>
+                        <td>@booking.VipRoom.Name</td>
+                        <td>@booking.VipRoom.Capacity</td>
                         <td>
                             <strong>С:</strong> @booking.StartTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                             <br/>
@@ -71,11 +71,11 @@
                         </td>
 
                         <td>
-                            <a href="/TableBooking/Update/@booking.Id" class="btn btn-warning btn-sm">✏
+                            <a href="/VipRoomBooking/Update/@booking.Id" class="btn btn-warning btn-sm">✏
                                 Редактировать</a>
                         </td>
                         <td>
-                            <a href="/TableBooking/Delete/@booking.Id" class="btn btn-danger btn-sm"
+                            <a href="/VipRoomBooking/Delete/@booking.Id" class="btn btn-danger btn-sm"
                                onclick="return confirm('Вы уверены?')">🗑 Удалить</a>
                         </td>
                     </tr>

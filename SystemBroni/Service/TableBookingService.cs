@@ -6,8 +6,8 @@ namespace SystemBroni.Service
     public interface ITableBookingService
     {
         public Task<TableBooking> Create(TableBooking booking, Table table, Guid? userId);
-        public List<TableBooking> GetBookingsByUserName(string term, int pageNumber, int pageSize);
-        public TableBooking? GetById(Guid id);
+        public Task<List<TableBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize);
+        public Task<TableBooking?> GetById(Guid id);
         public List<Table>? GetAllTables();
         public List<User>? GetAllUsers();
         public Task Update(TableBooking updateBooking);
@@ -26,86 +26,105 @@ namespace SystemBroni.Service
 
         public async Task<bool> IsTableAvailableAsync(Guid tableId, DateTime startTime, DateTime endTime)
         {
-            if (tableId == Guid.Empty)
-                throw new ArgumentException("Не указан идентификатор стола.");
-
             if (startTime >= endTime)
                 throw new ArgumentException("Начальное время должно быть раньше конечного времени.");
 
             return !await _context.TableBookings
-                .AnyAsync(b => b.Table.Id == tableId &&
-                               b.StartTime < endTime &&
-                               b.EndTime > startTime);
+                .AnyAsync(b =>
+                    b.Table.Id == tableId &&
+                    b.StartTime < endTime &&
+                    b.EndTime > startTime);
         }
 
 
         public async Task<TableBooking> Create(TableBooking booking, Table table, Guid? userId)
         {
-            if (userId == null || userId == Guid.Empty)
-            {
-                var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == booking.User.Email &&
-                                              u.Phone == booking.User.Phone);
+            await using var transaction = await _context.Database
+                .BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-                if (existingUser != null)
+            try
+            {
+                if (userId is null || userId == Guid.Empty)
                 {
-                    userId = existingUser.Id;
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(booking.User?.Name) ||
-                        string.IsNullOrEmpty(booking.User?.Email) ||
-                        string.IsNullOrEmpty(booking.User?.Phone))
+                    var existingUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Email == booking.User.Email);
+
+
+                    if (existingUser is not null)
                     {
-                        throw new ArgumentException(
-                            "Поля пользователя (имя, email, телефон) обязательны к заполнению.");
+                        userId = existingUser.Id;
+                        booking.User = existingUser;
                     }
-
-                    var newUser = new User
+                    else
                     {
-                        Name = booking.User.Name,
-                        Email = booking.User.Email,
-                        Phone = booking.User.Phone
-                    };
+                        if (string.IsNullOrEmpty(booking.User?.Name) ||
+                            string.IsNullOrEmpty(booking.User?.Email) ||
+                            string.IsNullOrEmpty(booking.User?.Phone))
+                            throw new ArgumentException(
+                                "Поля пользователя (имя, email, телефон) обязательны к заполнению.");
 
-                    await _context.Users.AddAsync(newUser);
-                    await _context.SaveChangesAsync();
-                    userId = newUser.Id;
+
+                        var newUser = new User
+                        {
+                            Name = booking.User.Name,
+                            Email = booking.User.Email,
+                            Phone = booking.User.Phone
+                        };
+
+                        await _context.Users.AddAsync(newUser);
+                        await _context.SaveChangesAsync();
+                        userId = newUser.Id;
+                        booking.User = newUser;
+                    }
                 }
-            }
 
-            if (userId != null && userId != Guid.Empty)
+                else if (userId is not null && userId != Guid.Empty)
+                {
+                    var existingUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Id == userId);
+
+                    if (existingUser == null)
+                        throw new InvalidOperationException("Пользователь не найден");
+
+                    booking.User = existingUser;
+                }
+
+
+                if (table?.Id == null || table.Id == Guid.Empty)
+                    throw new ArgumentException("Не указан идентификатор стола или объект стола пустой.");
+
+                var existingTable = await _context.Tables
+                    .FirstOrDefaultAsync(t => t.Id == table.Id);
+
+                booking.StartTime = DateTime.SpecifyKind
+                        (booking.StartTime, DateTimeKind.Local)
+                    .ToUniversalTime();
+
+                booking.EndTime = DateTime.SpecifyKind
+                        (booking.EndTime, DateTimeKind.Local)
+                    .ToUniversalTime();
+
+
+                if (existingTable == null)
+                    throw new InvalidOperationException("Столик не найден");
+
+                if (!await IsTableAvailableAsync(existingTable.Id, booking.StartTime, booking.EndTime))
+                    throw new InvalidOperationException("Столик уже забронирован на выбранное время");
+
+                booking.Table = existingTable;
+
+                await _context.TableBookings.AddAsync(booking);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return booking;
+            }
+            catch (Exception e)
             {
-                var existingUser = _context.Users
-                    .FirstOrDefault(u => u.Id == userId);
-
-                if (existingUser == null)
-                    throw new InvalidOperationException("Пользователь не найден");
-
-                booking.User = existingUser;
+                await transaction.RollbackAsync();
+                throw;
             }
-
-            if (table?.Id == null || table.Id == Guid.Empty)
-                throw new ArgumentException("Не указан идентификатор стола или объект стола пустой.");
-
-            var existingTable = await _context.Tables
-                .FirstOrDefaultAsync(t => t.Id == table.Id);
-
-            booking.StartTime = booking.StartTime.ToUniversalTime();
-            booking.EndTime = booking.EndTime.ToUniversalTime();
-
-            if (existingTable == null)
-                throw new InvalidOperationException("Столик не найден");
-
-            if (!await IsTableAvailableAsync(existingTable.Id, booking.StartTime, booking.EndTime))
-                throw new InvalidOperationException("Столик уже забронирован на выбранное время");
-
-            booking.Table = existingTable;
-
-            await _context.TableBookings.AddAsync(booking);
-
-            await _context.SaveChangesAsync();
-            return booking;
         }
 
 
@@ -114,40 +133,29 @@ namespace SystemBroni.Service
             return _context.Users.ToList();
         }
 
-
-        public List<TableBooking> GetAll(int pageNumber, int pageSize)
-        {
-            return _context.TableBookings
-                .Include(tb => tb.User)
-                .Include(tb => tb.Table)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-        }
-
         public List<Table>? GetAllTables()
         {
             return _context.Tables.ToList();
         }
 
 
-        public List<TableBooking> GetBookingsByUserName(string term, int pageNumber, int pageSize)
+        public async Task<List<TableBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize)
         {
-            return _context.TableBookings
+            return await _context.TableBookings
                 .Include(tb => tb.User)
                 .Include(tb => tb.Table)
                 .Where(n => n.User.Name.Contains(term))
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
         }
 
-        public TableBooking? GetById(Guid id)
+        public async Task<TableBooking?> GetById(Guid id)
         {
-            return _context.TableBookings
+            return await _context.TableBookings
                 .Include(tb => tb.User)
                 .Include(tb => tb.Table)
-                .FirstOrDefault(tb => tb.Id == id);
+                .FirstOrDefaultAsync(tb => tb.Id == id);
         }
 
         public async Task Update(TableBooking updateBooking)
