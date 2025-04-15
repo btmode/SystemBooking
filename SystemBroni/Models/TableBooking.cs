@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace SystemBroni.Models
@@ -10,6 +11,7 @@ namespace SystemBroni.Models
         public Table? Table { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+       
     }
 }
 

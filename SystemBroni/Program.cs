@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SystemBroni.Models;
 using SystemBroni.Service;
 
@@ -10,17 +11,27 @@ namespace SystemBroni
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Подключаем контекст БД
+            
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Время жизни сессии
-                options.Cookie.HttpOnly = true; // Безопасность
-                options.Cookie.IsEssential = true; // Важный куки
+                options.IdleTimeout = TimeSpan.FromMinutes(30); 
+                options.Cookie.HttpOnly = true; 
+                options.Cookie.IsEssential = true; 
             });
-
+            
+            
+            // РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ Serilog
+            var path = "Logger.txt";
+            builder.Host.UseSerilog((context, services, configuration) => configuration
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File(path, rollingInterval: RollingInterval.Day)
+            );
+           
+            
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITableService, TableService>();
@@ -30,7 +41,7 @@ namespace SystemBroni
 
             var app = builder.Build();
 
-            // Настраиваем приложение
+            
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -43,6 +54,12 @@ namespace SystemBroni
             app.UseSession();
             app.UseAuthorization();
 
+            // app.MapGet("/", (ILogger<Program> logger) =>
+            // {
+            //     logger.LogInformation("РџСЂРёРІРµС‚! Р­С‚Рѕ Р»РѕРі РІ С„Р°Р№Р» Рё РІ РєРѕРЅСЃРѕР»СЊ :)");
+            //     return "Р“РѕС‚РѕРІРѕ!";
+            // });
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

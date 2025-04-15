@@ -19,16 +19,14 @@ namespace SystemBroni.Controllers
         public IActionResult Create()
         {
             ViewBag.VipRooms = _vipRoomBookingService.GetAllVipRooms();
-            ViewBag.Users = _vipRoomBookingService.GetAllUsers();
-
             return View();
         }
 
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(VipRoomBooking booking, VipRoom vipRoom, Guid userId)
+        public async Task<IActionResult> Create(VipRoomBooking booking, Guid userId)
         {
-            await _vipRoomBookingService.Create(booking, vipRoom, userId);
+            await _vipRoomBookingService.Create(booking, userId);
 
             return RedirectToAction("GetAll");
         }
@@ -53,12 +51,8 @@ namespace SystemBroni.Controllers
         [HttpGet("Update/{id:Guid}")]
         public async Task<IActionResult> Update(Guid id)
         {
-            var booking = await _vipRoomBookingService.GetById(id);
-
-            if (booking is null)
-                return NotFound("Бронирование не найдено");
-
-            return View(booking);
+            ViewBag.VipRoom = await _vipRoomBookingService.GetById(id);
+            return View();
         }
 
 

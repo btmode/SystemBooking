@@ -2,14 +2,14 @@
 
 <h2>Редактировать бронирование</h2>
 
-<form method="post" action="@Url.Action("Update", "TableBooking", new { id = Model.Id })">
+<form asp-action="Update" method="post">
     <div>
         <label>Имя пользователя</label>
-        <input type="text" name="User.Name" value="@Model.User.Name" required />
+        <input type="text" name="User.Name" value="@Model.User.Name" required/>
     </div>
     <div>
         <label>Телефон</label>
-        <input type="text" name="User.Phone" value="@Model.User.Phone" required />
+        <input type="text" name="User.Phone" value="@Model.User.Phone" required/>
     </div>
     <div>
         <label>Стол</label>
@@ -25,15 +25,15 @@
     <div>
         <label>Начало бронирования</label>
         <input type="datetime-local" name="StartTime"
-               value="@Model.StartTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
+               value="@Model.StartTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required/>
     </div>
     <div>
         <label>Окончание бронирования</label>
         <input type="datetime-local" name="EndTime"
-               value="@Model.EndTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
+               value="@Model.EndTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required/>
     </div>
 
-    <br />
+    <br/>
     <button type="submit" class="btn btn-warning">Сохранить</button>
     <a href="@Url.Action("GetAll", "TableBooking")" class="btn btn-secondary">Отмена</a>
 </form>

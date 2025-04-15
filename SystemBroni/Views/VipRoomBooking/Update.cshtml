@@ -2,7 +2,7 @@
 
 <h2>Редактировать бронирование VIP-комнаты</h2>
 
-<form method="post" action="@Url.Action("Update", "VipRoomBooking", new { id = Model.Id })">
+<form asp-action="Update" method="post">
     <div>
         <label>Имя пользователя</label>
         <input type="text" name="User.Name" value="@Model.User.Name" required />
@@ -13,7 +13,7 @@
     </div>
     <div>
         <label>VIP-комната</label>
-        <select name="vipRoomId" required>
+        <select name="VipRoom.Id" required>
             @foreach (var vipRoom in ViewBag.VipRooms)
             {
                 <option value="@vipRoom.Id"

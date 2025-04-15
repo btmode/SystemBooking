@@ -1,85 +1,63 @@
 ﻿@model SystemBroni.Models.TableBooking
 
+
+
 @{
     ViewData["Title"] = "Добавить бронирование";
 }
 
-<h2>🍽 Создать бронирование</h2>
+<h2>🍽 Создать бронирование</h2>)
 
 <form asp-action="Create" method="post">
     <div class="mb-3">
         <label>Имя пользователя</label>
-        <input asp-for="User.Name" type="text" class="form-control" required />
+        <input asp-for="User.Name" type="text" class="form-control" required/>
     </div>
 
     <div class="mb-3">
         <label>Email</label>
-        <input asp-for="User.Email" type="email" class="form-control" required />
+        <input asp-for="User.Email" type="email" class="form-control" required/>
     </div>
 
     <div class="mb-3">
         <label>Телефон</label>
-        <input asp-for="User.Phone" type="text" class="form-control" required />
+        <input asp-for="User.Phone" type="text" class="form-control" required/>
     </div>
 
-    <!-- Скрытое поле для userId -->
-    @if (Model?.User != null)
-    {
-        <input type="hidden" asp-for="User.Id" value="@Model.User.Id" />
-    }
-    else
-    {
-        <input type="hidden" id="userId" name="userId" value="" />
-    }
 
 
-    
 
     <div class="mb-3">
         <label>Стол</label>
         <select asp-for="Table.Id" class="form-control">
-            @foreach (var table in ViewBag.Tables)
+            @if (ViewBag.Tables != null && ViewBag.Tables.Count > 0)
             {
-                <option value="@table.Id">@table.Name (Вместимость: @table.Capacity)</option>
+                foreach (var table in ViewBag.Tables)
+                {
+                    <option value="@table.Id">@table.Name (Вместимость: @table.Capacity)</option>
+                }
             }
+            else
+            {
+                <option disabled>Нет доступных столов</option>
+            }
+
         </select>
     </div>
 
+
     <div class="mb-3">
         <label>Начало бронирования МСК</label>
-        <input asp-for="StartTime" class="form-control" type="datetime-local" required />
+        <input asp-for="StartTime" class="form-control" type="datetime-local" required/>
     </div>
 
     <div class="mb-3">
         <label>Окончание бронирования МСК</label>
-        <input asp-for="EndTime" class="form-control" type="datetime-local" required />
+        <input asp-for="EndTime" class="form-control" type="datetime-local" required/>
     </div>
 
-    <br />
+    <br/>
     <button type="submit" class="btn btn-success">Создать</button>
     <a href="@Url.Action("GetAll", "TableBooking")" class="btn btn-secondary">Отмена</a>
 </form>
 
-@* <script> *@
-@*     const users = @Html.Raw(Json.Serialize(ViewBag.Users)); *@
-
-@*     const emailInput = document.getElementById('userEmail'); *@
-@*     const phoneInput = document.getElementById('userPhone'); *@
-@*     const userIdInput = document.getElementById('userId'); *@
-
-@*     function updateUserId() { *@
-@*         const email = emailInput.value.trim(); *@
-@*         const phone = phoneInput.value.trim(); *@
-
-@*         const matchingUser = users.find(u => u.email === email && u.phone === phone); *@
-
-@*         if (matchingUser) { *@
-@*             userIdInput.value = matchingUser.id; *@
-@*         } else { *@
-@*             userIdInput.value = ''; // Новый пользователь *@
-@*         } *@
-@*     } *@
-
-@*     emailInput.addEventListener('input', updateUserId); *@
-@*     phoneInput.addEventListener('input', updateUserId); *@
-@* </script> *@

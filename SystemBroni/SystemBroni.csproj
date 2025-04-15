@@ -33,9 +33,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3-dev-00346" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0-dev-02301" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="GetAllModelError\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

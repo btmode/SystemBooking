@@ -27,6 +27,7 @@
                      pageNumber = Model.PageNumber,
                      pageSize = Model.PageSize
                  })"
+           
            class="btn btn-secondary">⬅
             Назад к списку</a>
     </div>
@@ -57,7 +58,7 @@
             <tbody>
             @if (Model.VipRooms.Any())
             {
-                int i = startIndex;
+                var i = startIndex;
                 @foreach (var vipRoom in Model.VipRooms)
                 {
                     <tr>

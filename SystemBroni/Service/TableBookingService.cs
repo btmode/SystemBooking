@@ -5,11 +5,10 @@ namespace SystemBroni.Service
 {
     public interface ITableBookingService
     {
-        public Task<TableBooking> Create(TableBooking booking, Table table, Guid? userId);
+        public Task<TableBooking> Create(TableBooking booking,Guid? userId);
         public Task<List<TableBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize);
         public Task<TableBooking?> GetById(Guid id);
-        public List<Table>? GetAllTables();
-        public List<User>? GetAllUsers();
+        public Task<List<Table?>> GetAllTables();
         public Task Update(TableBooking updateBooking);
         public Task Delete(Guid id);
     }
@@ -17,10 +16,12 @@ namespace SystemBroni.Service
     public class TableBookingService : ITableBookingService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<TableBookingService> _logger;
 
-        public TableBookingService(ApplicationDbContext context)
+        public TableBookingService(ApplicationDbContext context, ILogger<TableBookingService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
 
@@ -37,7 +38,7 @@ namespace SystemBroni.Service
         }
 
 
-        public async Task<TableBooking> Create(TableBooking booking, Table table, Guid? userId)
+        public async Task<TableBooking> Create(TableBooking booking, Guid? userId)
         {
             await using var transaction = await _context.Database
                 .BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
@@ -90,11 +91,11 @@ namespace SystemBroni.Service
                 }
 
 
-                if (table?.Id == null || table.Id == Guid.Empty)
+                if (booking.Table?.Id == null || booking.Table.Id == Guid.Empty)
                     throw new ArgumentException("Не указан идентификатор стола или объект стола пустой.");
 
                 var existingTable = await _context.Tables
-                    .FirstOrDefaultAsync(t => t.Id == table.Id);
+                    .FirstOrDefaultAsync(t => t.Id == booking.Table.Id);
 
                 booking.StartTime = DateTime.SpecifyKind
                         (booking.StartTime, DateTimeKind.Local)
@@ -120,22 +121,18 @@ namespace SystemBroni.Service
                 await transaction.CommitAsync();
                 return booking;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ошибка при создании бронирования");
                 await transaction.RollbackAsync();
                 throw;
             }
         }
 
-
-        public List<User>? GetAllUsers()
+        
+        public async Task<List<Table?>> GetAllTables()
         {
-            return _context.Users.ToList();
-        }
-
-        public List<Table>? GetAllTables()
-        {
-            return _context.Tables.ToList();
+                return await _context.Tables.ToListAsync();
         }
 
 

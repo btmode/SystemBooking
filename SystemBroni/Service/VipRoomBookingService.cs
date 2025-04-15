@@ -6,7 +6,7 @@ namespace SystemBroni.Service
 {
     public interface IVipRoomBookingService
     {
-        public Task<VipRoomBooking> Create(VipRoomBooking booking, VipRoom vipRoom, Guid? userId);
+        public Task<VipRoomBooking> Create(VipRoomBooking booking, Guid? userId);
         public Task<List<VipRoomBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize);
         public Task<VipRoomBooking?> GetById(Guid id);
         public List<VipRoom>? GetAllVipRooms();
@@ -37,7 +37,7 @@ namespace SystemBroni.Service
                     b.EndTime > startTime);
         }
         
-        public async Task<VipRoomBooking> Create(VipRoomBooking booking, VipRoom vipRoom, Guid? userId)
+        public async Task<VipRoomBooking> Create(VipRoomBooking booking, Guid? userId)
         {
             await using var transaction = await _context.Database
                 .BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
@@ -90,11 +90,11 @@ namespace SystemBroni.Service
                 }
 
 
-                if (vipRoom?.Id == null || vipRoom.Id == Guid.Empty)
+                if (booking.VipRoom?.Id == null || booking.VipRoom.Id == Guid.Empty)
                     throw new ArgumentException("Не указан идентификатор Vip-комнаты или объект Vip-комнаты пустой.");
 
                 var existingTable = await _context.VipRooms
-                    .FirstOrDefaultAsync(t => t.Id == vipRoom.Id);
+                    .FirstOrDefaultAsync(t => t.Id == booking.VipRoom.Id);
 
                 booking.StartTime = DateTime.SpecifyKind
                         (booking.StartTime, DateTimeKind.Local)
@@ -116,7 +116,7 @@ namespace SystemBroni.Service
                 await _context.VipRoomBookings.AddAsync(booking);
 
                 await _context.SaveChangesAsync();
-
+                
                 await transaction.CommitAsync();
                 return booking;
             }

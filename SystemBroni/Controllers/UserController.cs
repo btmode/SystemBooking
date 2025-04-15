@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SystemBroni.Models;
 using SystemBroni.Service;
 using SystemBroni.Views;
@@ -34,8 +35,22 @@ namespace SystemBroni.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(User user)
         {
-            await _userService.Create(user);
-            return RedirectToAction("GetAll");
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(user); // Ошибки валидации модели автоматически попадут в Layout
+                }
+
+                await _userService.Create(user);
+                return RedirectToAction("GetAll");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при создании пользователя");
+                ModelState.AddModelError("", "Произошла ошибка при создании пользователя.");
+                return View(user);
+            }
         }
 
 
@@ -56,7 +71,7 @@ namespace SystemBroni.Controllers
             });
         }
 
-        
+
         [HttpGet("Update/{id:Guid}")]
         public async Task<IActionResult> Update(Guid id)
         {
@@ -68,16 +83,33 @@ namespace SystemBroni.Controllers
         [HttpPost("Update/{id:Guid}")]
         public async Task<IActionResult> Update(Guid id, User updatedUser)
         {
-            await _userService.Update(id, updatedUser);
-            return RedirectToAction("GetAll");
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(updatedUser);
+                }
+
+                await _userService.Update(id, updatedUser);
+                return RedirectToAction("GetAll");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при обновлении пользователя");
+                ModelState.AddModelError("", "Произошла ошибка при обновлении пользователя.");
+                return View(updatedUser);
+            }
         }
 
 
         [HttpGet("Delete/{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _userService.Delete(id);
-            return RedirectToAction("GetAll");
+            
+                await _userService.Delete(id);
+                return RedirectToAction("GetAll");
+            
+            
         }
     }
 }

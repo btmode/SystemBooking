@@ -9,28 +9,27 @@ namespace SystemBroni.Controllers
     public class TableBookingController : Controller
     {
         private readonly ITableBookingService _tableBookingService;
+        private readonly ILogger<TableBookingController> _logger;
 
-        public TableBookingController(ITableBookingService tableBookingService)
+        public TableBookingController(ITableBookingService tableBookingService, ILogger<TableBookingController> logger)
         {
             _tableBookingService = tableBookingService;
+            _logger = logger;
         }
 
-
+        // не могу решить проблему с передачей столов 
         [HttpGet("Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Tables = _tableBookingService.GetAllTables();
-            ViewBag.Users = _tableBookingService.GetAllUsers();
-
+            ViewBag.Tables = await _tableBookingService.GetAllTables();
             return View();
         }
 
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(TableBooking booking, Table table, Guid userId)
+        public async Task<IActionResult> Create(TableBooking booking, Guid? userId)
         {
-            await _tableBookingService.Create(booking, table, userId);
-
+            await _tableBookingService.Create(booking , userId); 
             return RedirectToAction("GetAll");
         }
 

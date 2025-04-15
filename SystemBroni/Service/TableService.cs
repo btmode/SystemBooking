@@ -65,7 +65,7 @@ namespace SystemBroni.Service
         
         public async Task Delete(Guid id)
         {
-            await _context.Users
+            await _context.Tables
                 .Where(a => a.Id == id)
                 .ExecuteDeleteAsync();
         }
