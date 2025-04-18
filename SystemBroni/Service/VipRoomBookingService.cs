@@ -9,7 +9,7 @@ namespace SystemBroni.Service
         public Task<VipRoomBooking> Create(VipRoomBooking booking, Guid? userId);
         public Task<List<VipRoomBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize);
         public Task<VipRoomBooking?> GetById(Guid id);
-        public List<VipRoom>? GetAllVipRooms();
+        public Task <List<VipRoom>> GetAllVipRooms();
         public List<User>? GetAllUsers();
         public Task Update(VipRoomBooking updateBooking);
         public Task Delete(Guid id);
@@ -132,9 +132,9 @@ namespace SystemBroni.Service
             return _context.Users.ToList();
         }
         
-        public List<VipRoom>? GetAllVipRooms()
+        public async Task <List<VipRoom>> GetAllVipRooms()
         {
-            return _context.VipRooms.ToList();
+            return await _context.VipRooms.ToListAsync();
         }
         
         public async Task<List<VipRoomBooking>> GetAllBookingsOrByUserName(string term, int pageNumber, int pageSize)

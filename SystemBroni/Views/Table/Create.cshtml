@@ -4,19 +4,29 @@
     ViewData["Title"] = "Добавить столик";
 }
 
-<h2>🍽 Добавить столик</h2>
+<br/>
+ <hr/>
+<h2 class="text-center mb-4">🍽 Добавить столик</h2>
+<hr/>
 
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label class="form-label">Номер столика</label>
-        <input asp-for="Name" class="form-control" required />
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow-lg p-4 bg-white rounded">
+        <form asp-action="Create" method="post">
+            <div class="input mb-3">
+                <label class="form-label">Номер столика</label>
+                <input asp-for="Name" class="form-control" required/>
+            </div>
+
+            <div class="input mb-3">
+                <label class="form-label">Вместимость</label>
+                <input asp-for="Capacity" class="form-control" required/>
+            </div>
+
+            <button type="submit" class="btn btn-success">➕ Добавить</button>
+            <a href="/Table/GetAll" class="btn btn-secondary">❌ Отмена</a>
+
+
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label class="form-label">Вместимость</label>
-        <input asp-for="Capacity" class="form-control" required />
-    </div>
-
-    <button type="submit" class="btn btn-success">➕ Добавить</button>
-    <a href="/Table/GetAll" class="btn btn-secondary">❌ Отмена</a>
-</form>
+</div>

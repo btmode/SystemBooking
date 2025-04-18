@@ -17,7 +17,7 @@ namespace SystemBroni.Controllers
             _logger = logger;
         }
 
-        // не могу решить проблему с передачей столов 
+        
         [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
@@ -27,9 +27,14 @@ namespace SystemBroni.Controllers
 
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(TableBooking booking, Guid? userId)
+        public async Task<IActionResult> Create(TableBooking booking, Guid? userId,bool IsPublic)
         {
             await _tableBookingService.Create(booking , userId); 
+            
+            if (IsPublic)
+                return RedirectToAction("Index", "Home");
+            
+            
             return RedirectToAction("GetAll");
         }
 

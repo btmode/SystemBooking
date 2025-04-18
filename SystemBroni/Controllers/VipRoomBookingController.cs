@@ -16,17 +16,19 @@ namespace SystemBroni.Controllers
         }
 
         [HttpGet("Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.VipRooms = _vipRoomBookingService.GetAllVipRooms();
+            ViewBag.VipRooms = await _vipRoomBookingService.GetAllVipRooms();
             return View();
         }
 
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(VipRoomBooking booking, Guid userId)
+        public async Task<IActionResult> Create(VipRoomBooking booking, Guid userId, bool IsPublic)
         {
             await _vipRoomBookingService.Create(booking, userId);
+            if (IsPublic)
+                return RedirectToAction("Index", "Home");
 
             return RedirectToAction("GetAll");
         }
@@ -70,6 +72,5 @@ namespace SystemBroni.Controllers
             await _vipRoomBookingService.Delete(id);
             return RedirectToAction("GetAll");
         }
-        
     }
 }
