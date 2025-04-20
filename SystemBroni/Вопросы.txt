@@ -1,0 +1,1 @@
+1 - передача данных за ранее перед  ViewBag.Tables||ViewBag.VipRooms

@@ -5,12 +5,17 @@ using SystemBroni.Service;
 
 namespace SystemBroni
 {
+    // Добавить возможность ограничения количества логов -
+    // 1) По размеру (максимум можно хранить 5МБ)
+    // 2) По кол-ву файлов (максимум можно хранить 10 файлов)
+    // 3) По дате логов (максимум можно за последние 7 дней)
+    // BackgroundService (не Hangfre!)
+    
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,13 +29,11 @@ namespace SystemBroni
             
             
             // Конфигурация Serilog
-            var path = "Logger.txt";
             builder.Host.UseSerilog((context, services, configuration) => configuration
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
-                .WriteTo.File(path, rollingInterval: RollingInterval.Day)
+                .WriteTo.File("logs/app.txt", rollingInterval: RollingInterval.Day)
             );
-           
             
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IUserService, UserService>();
@@ -38,6 +41,8 @@ namespace SystemBroni
             builder.Services.AddScoped<IVipRoomService, VipRoomService>();
             builder.Services.AddScoped<IVipRoomBookingService, VipRoomBookingService>();
             builder.Services.AddScoped<ITableBookingService, TableBookingService>();
+            builder.Services.AddScoped<BookingNumberGenerator>();
+
 
             var app = builder.Build();
 
@@ -60,9 +65,11 @@ namespace SystemBroni
             //     return "Готово!";
             // });
             
+            // Показывать номер для пользоватлеля
+            
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Test}/{action=Index}/{id?}");
 
             app.Run();
         }
