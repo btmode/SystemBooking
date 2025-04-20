@@ -15,14 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\PictureBooking\table.jpg" />
-    <None Include="wwwroot\PictureBooking\vipRoom.jpg" />
-    <None Include="wwwroot\Picture\instagram-logo-36.png" />
-    <None Include="wwwroot\Picture\telegram-logo-36.png" />
-    <None Include="wwwroot\Picture\vk-logo-36.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <PrivateAssets>all</PrivateAssets>

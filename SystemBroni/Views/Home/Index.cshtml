@@ -8,18 +8,18 @@
         <div class="claude-monet">
             <h1 class="fw-bold">Клод Моне</h1>
         </div>
-
+   
         <a href="/Admin/Panel" class="btn btn-primary">⚙ Панель управления</a>
 
         <div class="social-icons">
             <a href="https://t.me/btmode" class="social-link">
-                <img src="~/Picture/telegram-logo-36.png" alt="Telegram" class="mx-2">
+                <img src="~/Picture/telegram-logo-48.png" alt="Telegram" class="mx-2">
             </a>
             <a href="https://www.instagram.com/cristiano/" class="social-link">
-                <img src="~/Picture/instagram-logo-36.png" alt="Instagram" class="mx-2">
+                <img src="~/Picture/instagram-48.png" alt="Instagram" class="mx-2">
             </a>
             <a href="https://vk.com/burgerking" class="social-link">
-                <img src="~/Picture/vk-logo-36.png" alt="VK" class="mx-2">
+                <img src="~/Picture/vk-48.png" alt="VK" class="mx-2">
             </a>
         </div>
     </header>
@@ -32,7 +32,6 @@
         </div>
     </section>
 
-
     <section id="booking" class="py-5">
         <div class="container text-center">
             <h2 class="mb-4">Выберите тип бронирования</h2>
@@ -40,20 +39,20 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-4">
                     <div class="card booking-card shadow">
-                        <img src="~/PictureBooking/table.jpg" class="img-fluid rounded-top" alt="Столик">
+                        <img src="~/PictureBooking/TableV1.jpg" class="img-fluid rounded-top" alt="Столик">
                         <div class="card-body">
                             <h3 class="card-title">Столик</h3>
                             <p class="card-text">Зарезервируйте удобный столик в общем зале</p>
 
                             <!-- Чекбокс-хак -->
-                            <input type="checkbox" id="toggle-table-form" class="d-none toggle-form" />
-                            <label for="toggle-table-form" class="btn btn-success">Забронировать</label>
+                            <input type="checkbox" id="toggle-tableV1-form" class="d-none toggle-form" />
+                            <label for="toggle-tableV1-form" class="btn btn-success">Забронировать</label>
 
                             <!-- Форма бронирования -->
                             <div class="booking-form mt-3 hidden-form">
                                 <form asp-controller="TableBooking" asp-action="Create" method="post">
                                     <input type="hidden" name="BookingType" value="table" />
-                                    <input type="hidden" name="IsPublic" value="true" /> 
+                                    <input type="hidden" name="IsPublic" value="true" />
 
                                     <div class="mb-2">
                                         <input type="text" name="User.Name" class="form-control" placeholder="Ваше имя" required />
@@ -99,29 +98,88 @@
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="card booking-card shadow">
-                        <img src="~/PictureBooking/vipRoom.jpg" class="img-fluid rounded-top" alt="VIP-комната">
+                        <img src="~/PictureBooking/TableV2.jpg" class="img-fluid rounded-top" alt="Столик">
+                        <div class="card-body">
+                            <h3 class="card-title">Столик</h3>
+                            <p class="card-text">Зарезервируйте удобный столик в общем зале</p>
+
+                            <!-- Чекбокс-хак -->
+                            <input type="checkbox" id="toggle-tableV2-form" class="d-none toggle-form"/>
+                            <label for="toggle-tableV2-form" class="btn btn-success">Забронировать</label>
+
+                            <!-- Форма бронирования -->
+                            <div class="booking-form mt-3 hidden-form">
+                                <form asp-controller="TableBooking" asp-action="Create" method="post">
+                                    <input type="hidden" name="BookingType" value="table"/>
+                                    <input type="hidden" name="IsPublic" value="true"/>
+
+                                    <div class="mb-2">
+                                        <input type="text" name="User.Name" class="form-control" placeholder="Ваше имя" required/>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="email" name="User.Email" class="form-control" placeholder="Email" required/>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" name="User.Phone" class="form-control" placeholder="Телефон" required/>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <select name="Table.Id" class="form-control" required>
+                                            @if (ViewBag.Tables != null && ViewBag.Tables.Count > 0)
+                                            {
+                                                foreach (var table in ViewBag.Tables)
+                                                {
+                                                    <option value="@table.Id">@table.Name (Вместимость: @table.Capacity)</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option disabled selected>Нет доступных столов</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label class="form-label small">Начало (МСК)</label>
+                                        <input type="datetime-local" name="StartTime" class="form-control" required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small">Окончание (МСК)</label>
+                                        <input type="datetime-local" name="EndTime" class="form-control" required/>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Подтвердить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card booking-card shadow">
+                        <img src="~/PictureBooking/RoomV1.jpg" class="img-fluid rounded-top" alt="VIP-комната">
                         <div class="card-body">
                             <h3 class="card-title">VIP-комната</h3>
                             <p class="card-text">Зарезервируйте удобную Vip-комнату в общем зале</p>
 
                             <!-- Чекбокс-хак -->
-                            <input type="checkbox" id="toggle-vip-form" class="d-none toggle-form" />
-                            <label for="toggle-vip-form" class="btn btn-success">Забронировать</label>
+                            <input type="checkbox" id="toggle-vipV1-form" class="d-none toggle-form"/>
+                            <label for="toggle-vipV1-form" class="btn btn-success">Забронировать</label>
 
                             <!-- Форма бронирования -->
                             <div class="booking-form mt-3 hidden-form">
                                 <form asp-controller="VipRoomBooking" asp-action="Create" method="post">
-                                    <input type="hidden" name="BookingType" value="vipRoom" />
-                                    <input type="hidden" name="IsPublic" value="true" />
+                                    <input type="hidden" name="BookingType" value="vipRoom"/>
+                                    <input type="hidden" name="IsPublic" value="true"/>
 
                                     <div class="mb-2">
-                                        <input type="text" name="User.Name" class="form-control" placeholder="Ваше имя" required />
+                                        <input type="text" name="User.Name" class="form-control" placeholder="Ваше имя" required/>
                                     </div>
                                     <div class="mb-2">
-                                        <input type="email" name="User.Email" class="form-control" placeholder="Email" required />
+                                        <input type="email" name="User.Email" class="form-control" placeholder="Email" required/>
                                     </div>
                                     <div class="mb-2">
-                                        <input type="text" name="User.Phone" class="form-control" placeholder="Телефон" required />
+                                        <input type="text" name="User.Phone" class="form-control" placeholder="Телефон" required/>
                                     </div>
 
                                     <div class="mb-2">
@@ -142,12 +200,71 @@
 
                                     <div class="mb-2">
                                         <label class="form-label small">Начало (МСК)</label>
-                                        <input type="datetime-local" name="StartTime" class="form-control" required />
+                                        <input type="datetime-local" name="StartTime" class="form-control" required/>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label small">Окончание (МСК)</label>
-                                        <input type="datetime-local" name="EndTime" class="form-control" required />
+                                        <input type="datetime-local" name="EndTime" class="form-control" required/>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Подтвердить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card booking-card shadow">
+                        <img src="~/PictureBooking/RoomV2.jpg" class="img-fluid rounded-top" alt="VIP-комната">
+                        <div class="card-body">
+                            <h3 class="card-title">VIP-комната</h3>
+                            <p class="card-text">Зарезервируйте удобную Vip-комнату в общем зале</p>
+
+                            <!-- Чекбокс-хак -->
+                            <input type="checkbox" id="toggle-vipV2-form" class="d-none toggle-form"/>
+                            <label for="toggle-vipV2-form" class="btn btn-success">Забронировать</label>
+
+                            <!-- Форма бронирования -->
+                            <div class="booking-form mt-3 hidden-form">
+                                <form asp-controller="VipRoomBooking" asp-action="Create" method="post">
+                                    <input type="hidden" name="BookingType" value="vipRoom"/>
+                                    <input type="hidden" name="IsPublic" value="true"/>
+
+                                    <div class="mb-2">
+                                        <input type="text" name="User.Name" class="form-control" placeholder="Ваше имя" required/>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="email" name="User.Email" class="form-control" placeholder="Email" required/>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" name="User.Phone" class="form-control" placeholder="Телефон" required/>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <select name="VipRoom.Id" class="form-control" required>
+                                            @if (ViewBag.VipRooms != null && ViewBag.VipRooms.Count > 0)
+                                            {
+                                                foreach (var viproom in ViewBag.VipRooms)
+                                                {
+                                                    <option value="@viproom.Id">@viproom.Name (Вместимость: @viproom.Capacity)</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option disabled selected>Нет доступных VIP-комнат</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label class="form-label small">Начало (МСК)</label>
+                                        <input type="datetime-local" name="StartTime" class="form-control" required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small">Окончание (МСК)</label>
+                                        <input type="datetime-local" name="EndTime" class="form-control" required/>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">Подтвердить</button>
@@ -161,7 +278,7 @@
         </div>
     </section>
 
-    <section class="search-section py-4">
+    <section class="about-section py-4">
         <div class="container text-center">
             <h2 class="mb-3">Найти своё бронирование</h2>
             <form class="d-flex justify-content-center" method="get" action="/Booking/Search">

@@ -58,15 +58,10 @@ namespace SystemBroni
             app.UseSession();
             app.UseAuthorization();
 
-            // app.MapGet("/", (ILogger<Program> logger) =>
-            // {
-            //     logger.LogInformation("Привет! Это лог в файл и в консоль :)");
-            //     return "Готово!";
-            // });
             
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Test}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
