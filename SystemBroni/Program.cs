@@ -27,7 +27,6 @@ namespace SystemBroni
                 options.Cookie.IsEssential = true; 
             });
             
-            
             // Конфигурация Serilog
             builder.Host.UseSerilog((context, services, configuration) => configuration
                 .MinimumLevel.Debug()
@@ -65,8 +64,6 @@ namespace SystemBroni
             //     return "Готово!";
             // });
             
-            // Показывать номер для пользоватлеля
-            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Test}/{action=Index}/{id?}");
@@ -76,6 +73,7 @@ namespace SystemBroni
     }
 }
 
+// Показывать номер для пользоватлеля
 // При бронировании столика - удалить email
 // Добавить ограничение на время и дату бронирования
 // Создать бота в ТГ, через который можно так же забронировать столик

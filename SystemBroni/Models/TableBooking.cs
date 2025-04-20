@@ -11,7 +11,7 @@ namespace SystemBroni.Models
         public Table? Table { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-       
+        public int BookingNumber { get; set; }
     }
 }
 
